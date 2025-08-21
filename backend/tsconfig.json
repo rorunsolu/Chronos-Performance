@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Modern JS for Node
+    "module": "CommonJS", // Node uses CommonJS
+    "outDir": "./dist", // Output directory
+    "rootDir": "./", // Source root
+    "strict": true, // Enable strict type checking
+    "esModuleInterop": true, // Allow default imports from CJS
+    "skipLibCheck": true // Skip type checks on declaration files
+  },
+  "include": ["src/server.ts"],
+  "exclude": ["node_modules", "dist"]
+}
