@@ -8,6 +8,6 @@
     "esModuleInterop": true, // Allow default imports from CJS
     "skipLibCheck": true // Skip type checks on declaration files
   },
-  "include": ["src/server.ts"],
+  "include": ["src/api/server.ts"],
   "exclude": ["node_modules", "dist"]
 }
