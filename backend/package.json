@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/api/server.ts",
+  "main": "src/api/index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/api/server.ts"
+    "start": "ts-node src/api/index.ts"
   },
   "keywords": [],
   "author": "",
