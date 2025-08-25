@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2020", // Modern JS for Node
-    "module": "CommonJS", // Node uses CommonJS
+    "module": "CommonJS", // Should this remain as commonjs?
     "outDir": "./dist", // Output directory
-    "rootDir": "./", // Source root
+    "rootDir": "src", // Source root
     "strict": true, // Enable strict type checking
     "esModuleInterop": true, // Allow default imports from CJS
     "skipLibCheck": true // Skip type checks on declaration files
