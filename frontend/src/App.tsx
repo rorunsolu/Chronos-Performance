@@ -1,7 +1,8 @@
 import "@/App.css";
-import SearchBar from "@/components/SearchBar";
-import { createTheme, MantineProvider } from "@mantine/core";
+import Header from "@/components/Header/Header";
 import "@mantine/core/styles.css";
+import { useDisclosure } from "@mantine/hooks";
+import { AppShell, Burger, createTheme, MantineProvider } from "@mantine/core";
 
 function App() {
 	const theme = createTheme({
@@ -9,14 +10,28 @@ function App() {
 		cursorType: "pointer",
 	});
 
+	const [opened, { toggle }] = useDisclosure();
+
 	return (
 		<MantineProvider
 			theme={theme}
 			defaultColorScheme="dark"
 		>
-			<>
-				<SearchBar />
-			</>
+			<AppShell
+				header={{ height: 60 }}
+				navbar={{
+					width: 300,
+					breakpoint: "sm",
+					collapsed: { mobile: !opened },
+				}}
+				padding="md"
+			>
+				<Header />
+
+				<AppShell.Navbar p="md"></AppShell.Navbar>
+
+				<AppShell.Main></AppShell.Main>
+			</AppShell>
 		</MantineProvider>
 	);
 }

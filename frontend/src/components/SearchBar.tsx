@@ -30,13 +30,6 @@ const SearchBar = () => {
 					searchGames(e.currentTarget.value);
 				}}
 			/>
-
-			<JsonInput
-				value={JSON.stringify(results, null, 2)}
-				readOnly
-				minRows={8}
-				autosize
-			/>
 		</>
 	);
 };
