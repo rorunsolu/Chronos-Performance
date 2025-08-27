@@ -40,7 +40,7 @@ const Header = () => {
 
 			setSearchResults(data);
 		} catch (error) {
-			console.error("Error fetching search results via spotlight:", error);
+			console.error("Error fetching search results via header search:", error);
 		}
 	};
 
