@@ -1,66 +1,37 @@
-import dotenv from "dotenv";
-// Referenced docs
-// https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-// https://gamebrain.co/api/docs/game-detail
-// https://gamebrain.co/api/docs/search-games
-
-dotenv.config();
-
-const apiKey = process.env.GAMEBRAIN_API_KEY;
-
-export async function getGameDetailsById(gameId: string) {
-  const apiUrl = `https://api.gamebrain.co/v1/games/${gameId}`;
-
-  if (!apiKey) {
-    throw new Error("API key is missing");
-  }
-
-  try {
-    // retrieve the data from the API using the GET method
-    const response = await fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        "x-api-key": apiKey,
-        // refer to game brain documentation for the above
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error fetching game details: ${response.status}`);
-    }
-
-    // change the format of the data to json
-    const gameDetails = await response.json();
-    return gameDetails;
-  } catch (error) {
-    console.error("Error fetching game details:", error);
-    throw new Error("Failed to fetch game details");
-  }
-}
+import { getigdbAccessToken } from "../auth/igdbAuth";
 
 export async function searchGamesByQuery(query: string) {
-  const apiUrl = `https://api.gamebrain.co/v1/games?query=${query}`;
+  const accessToken = await getigdbAccessToken();
+  const clientID = process.env.IGDB_CLIENT_ID;
 
-  if (!apiKey) {
-    throw new Error("API key is missing");
+  if (!accessToken || !clientID) {
+    throw new Error("IGDB access token or client ID not found");
+    // prevents the overload nonsense with the headers
   }
 
+  const url = "https://api.igdb.com/v4/games";
+  const body = `search "${query}"; fields name, cover, genres, rating, checksum, url;`;
+
   try {
-    const response = await fetch(apiUrl, {
-      method: "GET",
+    const response = await fetch(url, {
+      method: "POST",
       headers: {
-        "x-api-key": apiKey,
+        "Client-ID": clientID,
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
+      body,
     });
 
     if (!response.ok) {
-      throw new Error(`Error searching games: ${response.status}`);
+      throw new Error(
+        `Error (gameController) searching games: ${response.status}`
+      );
     }
 
-    const searchResults = await response.json();
-    return searchResults;
+    return await response.json();
   } catch (error) {
-    console.error("Error searching games:", error);
-    throw new Error("Failed to search games");
+    console.error("Error (gameController) searching games:", error);
+    throw new Error("Error (gameController) searching games");
   }
 }

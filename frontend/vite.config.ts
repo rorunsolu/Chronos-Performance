@@ -4,13 +4,19 @@ import path from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [
-		react(),
-		tailwindcss(),
-	],
+	plugins: [react(), tailwindcss()],
+	server: {
+		proxy: {
+			"/api": {
+				target: "http://localhost:3000",
+				changeOrigin: true,
+				secure: false,
+			},
+		},
+	},
 	css: {
 		modules: {
-			localsConvention: 'camelCase',
+			localsConvention: "camelCase",
 		},
 	},
 	resolve: {

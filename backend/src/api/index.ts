@@ -1,8 +1,11 @@
+import resultsApi from "../routes/resultsApi";
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
+dotenv.config();
 
 const app = express(); // Creates an instance of an Express application
-const port = 4000; // Sets the port number for the server to listen on
+// const port = process.env.PORT || 3000; // Sets the port number for the server to listen on
 
 // Both lines below Adds middleware (functions that do stuff with the code, requests and responses)
 app.use(cors());
@@ -15,6 +18,15 @@ app.get("/", (request, response) => {
 });
 
 // Starts the server and listens on the specified port
-app.listen(port, () => {
-  console.log("Server running on http://localhost:${port}");
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
+
+app.use("/api/IGDBapi/results", resultsApi);
+
+// Docs
+// https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Displaying_data
+// https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/routes
+// https://api-docs.igdb.com/#expander "Some fields are actually ids pointing to another endpoint. The expander feature is a convenient way to go into these other endpoints and access more information from them in the same query, instead of having to do multiple queries."
+
+//!Note: You can only send data to an api if it is in JSON. So if needed, comvert the data to json (data.json() this converts it to json) then use POST to send it.
