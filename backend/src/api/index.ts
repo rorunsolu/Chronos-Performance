@@ -30,3 +30,5 @@ app.use("/api/IGDBapi/results", resultsApi);
 // https://api-docs.igdb.com/#expander "Some fields are actually ids pointing to another endpoint. The expander feature is a convenient way to go into these other endpoints and access more information from them in the same query, instead of having to do multiple queries."
 
 //!Note: You can only send data to an api if it is in JSON. So if needed, comvert the data to json (data.json() this converts it to json) then use POST to send it.
+
+// Postman testing https://ramsthemes.com/news/how-to-obtain-an-auth-key-from-the-igdb-api-using-postman/

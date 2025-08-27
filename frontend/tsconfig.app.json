@@ -42,7 +42,8 @@
 		"noImplicitReturns": true, // Ensure all code paths return in functions
 		"erasableSyntaxOnly": true, // Report code that can be removed with no effect
 		"noFallthroughCasesInSwitch": true, // Catch unintentional fall-through in switch statements
-		"noUncheckedSideEffectImports": true // Disallow imports with side effects that aren't used
+		"noUncheckedSideEffectImports": true, // Disallow imports with side effects that aren't used
+		"skipLibCheck": true // trying to avoid the whole mantine nonsene failing the vercel deployment
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", "dist"]
