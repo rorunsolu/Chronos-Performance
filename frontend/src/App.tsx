@@ -1,8 +1,9 @@
 import "@/App.css";
 import Header from "@/components/Header/Header";
+import { AppShell, createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { useDisclosure } from "@mantine/hooks";
-import { AppShell, Burger, createTheme, MantineProvider } from "@mantine/core";
+import "@mantine/spotlight/styles.css";
 
 function App() {
 	const theme = createTheme({
@@ -10,7 +11,7 @@ function App() {
 		cursorType: "pointer",
 	});
 
-	const [opened, { toggle }] = useDisclosure();
+	const [opened] = useDisclosure();
 
 	return (
 		<MantineProvider

@@ -3,6 +3,7 @@ import classes from "@/components/Header/Header.module.css";
 import { Burger, Group, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Search } from "lucide-react";
+import { useState } from "react";
 
 const links = [
 	{ link: "/about", label: "Features" },
@@ -13,6 +14,7 @@ const links = [
 
 const Header = () => {
 	const [opened, { toggle }] = useDisclosure(false);
+	const [, setSearchResults] = useState([]);
 
 	const items = links.map((link) => (
 		<a
@@ -24,6 +26,23 @@ const Header = () => {
 			{link.label}
 		</a>
 	));
+
+	const handleSearch = async (query: string) => {
+		try {
+			const response = await fetch(
+				`/api/IGDBapi/results/search?q=${encodeURIComponent(query)}`
+			);
+			if (!response.ok) {
+				throw new Error(`Response is not okay ${response.status}`);
+			}
+
+			const data = await response.json();
+
+			setSearchResults(data);
+		} catch (error) {
+			console.error("Error fetching search results via spotlight:", error);
+		}
+	};
 
 	return (
 		<header className={classes.header}>
@@ -51,6 +70,7 @@ const Header = () => {
 						placeholder="Search games"
 						leftSectionPointerEvents="none"
 						leftSection={<Search size={14} />}
+						onChange={(e) => handleSearch(e.currentTarget.value)}
 					/>
 				</Group>
 			</div>
