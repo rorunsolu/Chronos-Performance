@@ -1,9 +1,9 @@
-import { JsonInput, TextInput } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { useState } from "react";
 
 const SearchBar = () => {
 	const [query, setQuery] = useState("");
-	const [results, setResults] = useState("");
+	const [, setResults] = useState("");
 
 	const searchGames = async (searchQuery: string) => {
 		try {
@@ -29,13 +29,6 @@ const SearchBar = () => {
 					setQuery(e.currentTarget.value);
 					searchGames(e.currentTarget.value);
 				}}
-			/>
-
-			<JsonInput
-				value={JSON.stringify(results, null, 2)}
-				readOnly
-				minRows={8}
-				autosize
 			/>
 		</>
 	);

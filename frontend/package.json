@@ -12,6 +12,7 @@
   "dependencies": {
     "@mantine/core": "^8.2.7",
     "@mantine/hooks": "^8.2.7",
+    "@mantine/spotlight": "^8.2.7",
     "@tailwindcss/vite": "^4.1.12",
     "lucide-react": "^0.540.0",
     "prettier": "^3.6.2",
