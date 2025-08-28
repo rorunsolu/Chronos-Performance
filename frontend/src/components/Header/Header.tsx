@@ -4,24 +4,24 @@ import { Burger, Group, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const links = [
-	{ link: "/about", label: "Features" },
-	{ link: "/pricing", label: "Pricing" },
-	{ link: "/learn", label: "Learn" },
-	{ link: "/community", label: "Community" },
-];
+const links = [{ link: "/", label: "Home" }];
 
 const Header = () => {
 	const [opened, { toggle }] = useDisclosure(false);
 	const [, setSearchResults] = useState([]);
+	const navigate = useNavigate();
 
 	const items = links.map((link) => (
 		<a
 			key={link.label}
 			href={link.link}
 			className={classes.link}
-			onClick={(event) => event.preventDefault()}
+			onClick={(event) => {
+				event.preventDefault();
+				navigate(link.link);
+			}}
 		>
 			{link.label}
 		</a>
