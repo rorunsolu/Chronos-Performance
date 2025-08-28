@@ -49,7 +49,13 @@ export async function getHomepageGames() {
   }
 
   const url = "https://api.igdb.com/v4/games";
-  const body = `fields name, cover, rating, url; limit 30; offset 0;`;
+
+  const body = `
+  fields name, cover.image_id, rating, url, websites.url, websites.category;
+  where cover != null & websites.category = (13,16,17,18);
+  limit 30;
+  offset 0;
+`;
 
   try {
     const response = await fetch(url, {

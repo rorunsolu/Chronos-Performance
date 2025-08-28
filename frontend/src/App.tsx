@@ -3,7 +3,6 @@ import Header from "@/components/Header/Header";
 import Home from "@/pages/Home/Home";
 import { AppShell, createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
-import { useDisclosure } from "@mantine/hooks";
 import "@mantine/spotlight/styles.css";
 import { Route, Routes } from "react-router-dom";
 
@@ -13,21 +12,14 @@ function App() {
 		cursorType: "pointer",
 	});
 
-	const [opened] = useDisclosure();
+	//const [opened] = useDisclosure();
 
 	return (
 		<MantineProvider
 			theme={theme}
 			defaultColorScheme="dark"
 		>
-			<AppShell
-				header={{ height: 56 }}
-				navbar={{
-					width: 250,
-					breakpoint: "sm",
-					collapsed: { mobile: !opened },
-				}}
-			>
+			<AppShell header={{ height: 56 }}>
 				<AppShell.Header>
 					<Header />
 				</AppShell.Header>
