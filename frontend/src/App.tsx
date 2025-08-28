@@ -1,9 +1,11 @@
 import "@/App.css";
 import Header from "@/components/Header/Header";
+import Home from "@/pages/Home/Home";
 import { AppShell, createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { useDisclosure } from "@mantine/hooks";
 import "@mantine/spotlight/styles.css";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
 	const theme = createTheme({
@@ -19,19 +21,25 @@ function App() {
 			defaultColorScheme="dark"
 		>
 			<AppShell
-				header={{ height: 60 }}
+				header={{ height: 56 }}
 				navbar={{
-					width: 300,
+					width: 250,
 					breakpoint: "sm",
 					collapsed: { mobile: !opened },
 				}}
-				padding="md"
 			>
-				<Header />
+				<AppShell.Header>
+					<Header />
+				</AppShell.Header>
 
-				<AppShell.Navbar p="md"></AppShell.Navbar>
-
-				<AppShell.Main></AppShell.Main>
+				<AppShell.Main>
+					<Routes>
+						<Route
+							path="/"
+							element={<Home />}
+						/>
+					</Routes>
+				</AppShell.Main>
 			</AppShell>
 		</MantineProvider>
 	);

@@ -13,10 +13,12 @@ const ChronosLogo = () => {
 			}}
 			style={{ cursor: "pointer" }}
 		>
+			<img
 				src="/chronos-logo.svg"
 				alt="Chronos Logo"
 				className="h-6 w-6"
 			/>
+
 			<Title order={5}>Chronos</Title>
 		</Group>
 	);
