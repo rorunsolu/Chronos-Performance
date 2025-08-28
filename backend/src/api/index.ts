@@ -1,3 +1,4 @@
+import homepageApi from "../routes/homepageApi";
 import resultsApi from "../routes/resultsApi";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -23,6 +24,7 @@ app.listen(3000, () => {
 });
 
 app.use("/api/IGDBapi/results", resultsApi);
+app.use("/api/IGDBapi/homepage", homepageApi);
 
 // Docs
 // https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Displaying_data
@@ -32,3 +34,5 @@ app.use("/api/IGDBapi/results", resultsApi);
 //!Note: You can only send data to an api if it is in JSON. So if needed, comvert the data to json (data.json() this converts it to json) then use POST to send it.
 
 // Postman testing https://ramsthemes.com/news/how-to-obtain-an-auth-key-from-the-igdb-api-using-postman/
+// Pagnation & result limits: https://api-docs.igdb.com/#pagination
+// The default limit is 10 results per request and the max is 500

@@ -1,4 +1,4 @@
-import { searchGamesByQuery } from "../controllers/gameController";
+import { searchGamesByQuery } from "../controllers/IGDBController";
 import express from "express";
 
 const router = express.Router();
