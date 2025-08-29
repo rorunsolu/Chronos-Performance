@@ -32,14 +32,19 @@ const Header = () => {
 				`/api/IGDBapi/results/search?q=${encodeURIComponent(query)}`
 			);
 			if (!response.ok) {
-				throw new Error(`Response is not okay ${response.status}`);
+				throw new Error(
+					`Response is not okay ${response.status}`
+				);
 			}
 
 			const data = await response.json();
 
 			setSearchResults(data);
 		} catch (error) {
-			console.error("Error fetching search results via header search:", error);
+			console.error(
+				"Error fetching search results via header search:",
+				error
+			);
 		}
 	};
 
@@ -69,7 +74,9 @@ const Header = () => {
 						placeholder="Search games"
 						leftSectionPointerEvents="none"
 						leftSection={<Search size={14} />}
-						onChange={(e) => handleSearch(e.currentTarget.value)}
+						onChange={(e) =>
+							handleSearch(e.currentTarget.value)
+						}
 					/>
 				</Group>
 			</div>

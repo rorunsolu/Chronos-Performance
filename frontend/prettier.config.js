@@ -1,5 +1,5 @@
 const prettierConfig = {
-	printWidth: 80,
+	printWidth: 60,
 	tabWidth: 2,
 	useTabs: true,
 	semi: true,
