@@ -1,4 +1,4 @@
-import { searchGamesByQuery } from "../controllers/gameController";
+import { searchGamesByQuery } from "../controllers/IGDBController";
 import express from "express";
 
 const router = express.Router();
@@ -7,7 +7,7 @@ router.get("/search", async (request, response) => {
   const query = request.query.q as string;
 
   if (!query) {
-    return response.status(400).json({ error: "Missing query parameter ?q=" });
+    return response.json([]);
   }
 
   try {

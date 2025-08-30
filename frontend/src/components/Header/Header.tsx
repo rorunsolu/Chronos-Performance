@@ -4,24 +4,23 @@ import { Burger, Group, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Search } from "lucide-react";
 import { useState } from "react";
-
-const links = [
-	{ link: "/about", label: "Features" },
-	{ link: "/pricing", label: "Pricing" },
-	{ link: "/learn", label: "Learn" },
-	{ link: "/community", label: "Community" },
-];
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
 	const [opened, { toggle }] = useDisclosure(false);
 	const [, setSearchResults] = useState([]);
 
+	const navigate = useNavigate();
+	const links = [{ link: "/", label: "Home" }];
 	const items = links.map((link) => (
 		<a
 			key={link.label}
 			href={link.link}
 			className={classes.link}
-			onClick={(event) => event.preventDefault()}
+			onClick={(event) => {
+				event.preventDefault();
+				navigate(link.link);
+			}}
 		>
 			{link.label}
 		</a>
@@ -33,14 +32,19 @@ const Header = () => {
 				`/api/IGDBapi/results/search?q=${encodeURIComponent(query)}`
 			);
 			if (!response.ok) {
-				throw new Error(`Response is not okay ${response.status}`);
+				throw new Error(
+					`Response is not okay ${response.status}`
+				);
 			}
 
 			const data = await response.json();
 
 			setSearchResults(data);
 		} catch (error) {
-			console.error("Error fetching search results via header search:", error);
+			console.error(
+				"Error fetching search results via header search:",
+				error
+			);
 		}
 	};
 
@@ -70,7 +74,9 @@ const Header = () => {
 						placeholder="Search games"
 						leftSectionPointerEvents="none"
 						leftSection={<Search size={14} />}
-						onChange={(e) => handleSearch(e.currentTarget.value)}
+						onChange={(e) =>
+							handleSearch(e.currentTarget.value)
+						}
 					/>
 				</Group>
 			</div>

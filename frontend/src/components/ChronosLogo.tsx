@@ -9,7 +9,7 @@ const ChronosLogo = () => {
 			gap={6}
 			align="center"
 			onClick={() => {
-				navigate("/home");
+				navigate("/");
 			}}
 			style={{ cursor: "pointer" }}
 		>
