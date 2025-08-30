@@ -1,14 +1,10 @@
 import "@/App.css";
 import Header from "@/components/Header/Header";
 import Home from "@/pages/Home/Home";
-import {
-	AppShell,
-	createTheme,
-	MantineProvider,
-} from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/spotlight/styles.css";
 import { Route, Routes } from "react-router-dom";
+import { AppShell, createTheme, MantineProvider } from "@mantine/core";
 
 function App() {
 	const theme = createTheme({
@@ -16,12 +12,10 @@ function App() {
 		cursorType: "pointer",
 	});
 
-	//const [opened] = useDisclosure();
-
 	return (
 		<MantineProvider
 			theme={theme}
-			defaultColorScheme="dark"
+			defaultColorScheme="light"
 		>
 			<AppShell header={{ height: 56 }}>
 				<AppShell.Header>

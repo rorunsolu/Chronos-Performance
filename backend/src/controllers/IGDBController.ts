@@ -14,7 +14,13 @@ export async function searchGamesByQuery(query: string) {
   }
 
   const url = "https://api.igdb.com/v4/games";
-  const body = `search "${query}"; fields name, cover, rating, url; limit 20; offset 0;`;
+  const body = `
+  search "${query}"; 
+  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.category;
+  where cover != null & cover.image_id != null & websites.category = (13,16,17,18);
+  limit 20; 
+  offset 0;
+  `;
 
   try {
     const response = await fetch(url, {
@@ -56,8 +62,8 @@ export async function getHomepageGames(req: Request, res: Response) {
   const url = "https://api.igdb.com/v4/games";
 
   const body = `
-  fields name, cover.image_id, rating, url, websites.url, websites.category;
-  where cover != null & websites.category = (13,16,17,18);
+  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.category;
+  where cover != null & cover.image_id != null & websites.category = (13,16,17,18);
   limit ${fetchLimit};
   offset ${offset};
 `;

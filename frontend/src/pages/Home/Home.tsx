@@ -9,7 +9,6 @@ import {
 import {
 	Card,
 	Container,
-	Grid,
 	Group,
 	Image,
 	SimpleGrid,
@@ -19,7 +18,6 @@ import {
 	TextInput,
 	Button,
 } from "@mantine/core";
-// import type { SpotlightActionData } from "@mantine/spotlight";
 
 interface HomePageGame {
 	id: number;
@@ -29,6 +27,9 @@ interface HomePageGame {
 	};
 	rating: number;
 	url: string;
+	genres: {
+		name: string;
+	}[];
 }
 
 const Home = () => {
@@ -64,17 +65,32 @@ const Home = () => {
 			size="lg"
 			my="lg"
 		>
-			<Grid>
-				{Array.from({ length: 30 }).map((_, index) => (
-					<Skeleton
-						key={index}
-						height={200}
-						width={200}
-						animate
-						mb="sm"
-					/>
-				))}
-			</Grid>
+			<Stack>
+				<TextInput
+					radius="md"
+					size="md"
+					leftSection={<Search size={18} />}
+					placeholder="Search games"
+					readOnly
+					onClick={() => {
+						spotlight.open();
+					}}
+				/>
+
+				<SimpleGrid
+					cols={{ base: 2, xs: 3, sm: 4, lg: 4 }}
+					mb="lg"
+				>
+					{Array.from({ length: 30 }).map((_, index) => (
+						<Skeleton
+							key={index}
+							height={300}
+							width={"100%"}
+							animate
+						/>
+					))}
+				</SimpleGrid>
+			</Stack>
 		</Container>
 	) : status === "error" ? (
 		<Container
@@ -104,7 +120,7 @@ const Home = () => {
 
 				{data.pages.map((results, i) => (
 					<SimpleGrid
-						cols={{ base: 2, xs: 2, sm: 3, md: 4, lg: 4 }}
+						cols={{ base: 1, xs: 2, sm: 3, md: 4, lg: 4 }}
 						mb="lg"
 						key={i}
 					>
@@ -118,7 +134,11 @@ const Home = () => {
 							>
 								<Card.Section>
 									<Image
-										src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`}
+										src={
+											game.cover
+												? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
+												: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+										}
 										alt={`Image of ${game.name}`}
 										fallbackSrc="https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
 									/>
@@ -158,7 +178,7 @@ const SpotlightSearch = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [updatedAt, setUpdatedAt] = useState(0);
 
-	const { isPending, error, data, dataUpdatedAt } = useQuery({
+	const { data, dataUpdatedAt, isFetching } = useQuery({
 		queryKey: ["spotlightResults", searchQuery],
 		queryFn: async () => {
 			if (!searchQuery.trim()) return [];
@@ -176,29 +196,7 @@ const SpotlightSearch = () => {
 		}
 	}, [dataUpdatedAt]);
 
-	if (isPending)
-		return (
-			<Container
-				size="lg"
-				my="lg"
-			>
-				<Stack>
-					{Array.from({ length: 5 }).map((_, index) => (
-						<Skeleton
-							key={index}
-							height={56}
-							//width={200}
-							animate
-							mb="sm"
-						/>
-					))}
-				</Stack>
-			</Container>
-		);
-
-	if (error) return "An error has occurred: " + error.message;
-
-	const spotlightItems = data
+	const spotlightItems = (data || [])
 		.filter((item: HomePageGame) =>
 			item.name
 				.toString()
@@ -206,31 +204,65 @@ const SpotlightSearch = () => {
 				.includes(searchQuery.toLowerCase().trim())
 		)
 		.map((item: HomePageGame) => (
-			<Spotlight.Action
-				key={item.id}
-				label={item.name}
-			/>
+			<Spotlight.Action key={item.id}>
+				<img
+					src={
+						item.cover
+							? `https://images.igdb.com/igdb/image/upload/t_cover_big/${item.cover.image_id}.jpg`
+							: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+					}
+					alt={`Image of ${item.name}`}
+					width={50}
+					height={100}
+				/>
+				<Stack
+					ml="sm"
+					gap="5"
+				>
+					<Text>{item.name}</Text>
+					<Text
+						size="xs"
+						c="dimmed"
+					>
+						{Array.isArray(item.genres)
+							? item.genres.map((genre) => genre.name).join(", ")
+							: "No genres available"}
+					</Text>
+				</Stack>
+			</Spotlight.Action>
 		));
 
 	return (
-		<>
-			<Spotlight.Root
-				onQueryChange={setSearchQuery}
-				query={searchQuery}
-				closeOnActionTrigger={false}
-			>
-				<Spotlight.Search
-					placeholder="Search..."
-					leftSection={<Search size={20} />}
-				/>
-				<Spotlight.ActionsList>
-					{spotlightItems.length > 0 ? (
-						spotlightItems
-					) : (
-						<Spotlight.Empty>Nothing found...</Spotlight.Empty>
-					)}
-				</Spotlight.ActionsList>
-			</Spotlight.Root>
-		</>
+		<Spotlight.Root
+			onQueryChange={setSearchQuery}
+			query={searchQuery}
+			closeOnActionTrigger={false}
+			scrollable={spotlightItems.length > 0}
+			maxHeight={400}
+		>
+			<Spotlight.Search
+				placeholder="Search games..."
+				leftSection={<Search size={20} />}
+			/>
+			<Spotlight.ActionsList>
+				{isFetching ? (
+					<Spotlight.Empty>
+						<Stack>
+							{Array.from({ length: 5 }).map((_, index) => (
+								<Skeleton
+									key={index}
+									height={56}
+									animate
+								/>
+							))}
+						</Stack>
+					</Spotlight.Empty>
+				) : spotlightItems.length > 0 ? (
+					spotlightItems
+				) : (
+					<Spotlight.Empty>Nothing found...</Spotlight.Empty>
+				)}
+			</Spotlight.ActionsList>
+		</Spotlight.Root>
 	);
 };
