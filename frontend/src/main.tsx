@@ -1,12 +1,13 @@
 import App from "@/App";
-import {
-	QueryClient,
-	QueryClientProvider,
-} from "@tanstack/react-query";
+import { AuthContextProvider } from "@/auth/AuthContext";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import {
+	QueryClient,
+	QueryClientProvider,
+} from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +21,9 @@ if (!rootElement.innerHTML) {
 		<StrictMode>
 			<BrowserRouter>
 				<QueryClientProvider client={queryClient}>
-					<App />
+					<AuthContextProvider>
+						<App />
+					</AuthContextProvider>
 					<ReactQueryDevtools initialIsOpen={true} />
 				</QueryClientProvider>
 			</BrowserRouter>
