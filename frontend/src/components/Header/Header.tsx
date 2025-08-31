@@ -1,24 +1,59 @@
+import { UserAuth } from "@/auth/AuthContext";
 import ChronosLogo from "@/components/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
-import { Burger, Group, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Search } from "lucide-react";
+import cx from "clsx";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+	Burger,
+	Group,
+	Menu,
+	Text,
+	Avatar,
+	UnstyledButton,
+} from "@mantine/core";
+import {
+	Settings,
+	ArrowRightLeft,
+	Trash2,
+	LogOut,
+	ChevronsUpDown,
+} from "lucide-react";
 
 const Header = () => {
+	const links = [{ link: "/", label: "Home" }];
+	const [active, setActive] = useState(links[0].link);
+
 	const [opened, { toggle }] = useDisclosure(false);
-	const [, setSearchResults] = useState([]);
+	const [userMenuOpened, setUserMenuOpened] =
+		useState(false);
 
 	const navigate = useNavigate();
-	const links = [{ link: "/", label: "Home" }];
+	const {
+		//user,
+		logOut,
+	} = UserAuth();
+
+	const handleSignOut = async () => {
+		try {
+			logOut();
+		} catch (error) {
+			throw new Error(
+				"Failed to log out. Please try again."
+			);
+		}
+	};
+
 	const items = links.map((link) => (
 		<a
 			key={link.label}
 			href={link.link}
 			className={classes.link}
+			data-active={active === link.link || undefined}
 			onClick={(event) => {
 				event.preventDefault();
+				setActive(link.link);
 				navigate(link.link);
 			}}
 		>
@@ -26,32 +61,17 @@ const Header = () => {
 		</a>
 	));
 
-	const handleSearch = async (query: string) => {
-		try {
-			const response = await fetch(
-				`/api/IGDBapi/results/search?q=${encodeURIComponent(query)}`
-			);
-			if (!response.ok) {
-				throw new Error(
-					`Response is not okay ${response.status}`
-				);
-			}
-
-			const data = await response.json();
-
-			setSearchResults(data);
-		} catch (error) {
-			console.error(
-				"Error fetching search results via header search:",
-				error
-			);
-		}
+	const user = {
+		name: "Jane Spoonfighter",
+		email: "janspoon@fighter.dev",
+		image:
+			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png",
 	};
 
 	return (
 		<header className={classes.header}>
 			<div className={classes.inner}>
-				<Group>
+				<Group className="min-w-fit">
 					<Burger
 						opened={opened}
 						onClick={toggle}
@@ -61,7 +81,10 @@ const Header = () => {
 					<ChronosLogo />
 				</Group>
 
-				<Group>
+				<Group
+					justify="space-between"
+					w={"100%"}
+				>
 					<Group
 						ml={50}
 						gap={5}
@@ -70,14 +93,71 @@ const Header = () => {
 					>
 						{items}
 					</Group>
-					<TextInput
-						placeholder="Search games"
-						leftSectionPointerEvents="none"
-						leftSection={<Search size={14} />}
-						onChange={(e) =>
-							handleSearch(e.currentTarget.value)
-						}
-					/>
+					<Menu
+						width={260}
+						position="bottom-end"
+						transitionProps={{
+							transition: "pop-top-right",
+						}}
+						onClose={() => setUserMenuOpened(false)}
+						onOpen={() => setUserMenuOpened(true)}
+						withinPortal
+					>
+						<Menu.Target>
+							<UnstyledButton
+								className={cx(classes.user, {
+									[classes.userActive]: userMenuOpened,
+								})}
+							>
+								<Group gap={7}>
+									<Avatar
+										src={user.image}
+										alt={user.name}
+										radius="xl"
+										size={20}
+									/>
+									<Text
+										fw={500}
+										size="sm"
+										lh={1}
+										mr={3}
+									>
+										{user.name}
+									</Text>
+									<ChevronsUpDown size={12} />
+								</Group>
+							</UnstyledButton>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Label>Settings</Menu.Label>
+							<Menu.Item
+								leftSection={<Settings size={16} />}
+							>
+								Account settings
+							</Menu.Item>
+							<Menu.Item
+								leftSection={<ArrowRightLeft size={16} />}
+							>
+								Change account
+							</Menu.Item>
+							<Menu.Item
+								leftSection={<LogOut size={16} />}
+								onClick={handleSignOut}
+							>
+								Logout
+							</Menu.Item>
+
+							<Menu.Divider />
+
+							<Menu.Label>Danger zone</Menu.Label>
+							<Menu.Item
+								color="red"
+								leftSection={<Trash2 size={16} />}
+							>
+								Delete account
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
 				</Group>
 			</div>
 		</header>
