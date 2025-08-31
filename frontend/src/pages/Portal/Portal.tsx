@@ -55,8 +55,8 @@ const Portal = () => {
 					return "Password must be at least 6 characters";
 				}
 
-				if (!/^(?=.*[A-Z])(?=.*\d).{1,}$/.test(value)) {
-					return "Password must have at least 1 capital letter and 1 number";
+				if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{}|;':",.<>/?]).{1,}$/.test(value)) {
+					return "Password must have at least 1 capital letter, 1 number, and 1 special character";
 				}
 				return null;
 			},
