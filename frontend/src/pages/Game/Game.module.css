@@ -1,0 +1,16 @@
+.cover {
+	max-width: 268px;
+	max-height: 357px;
+
+	width: 100%;
+	object-fit: cover;
+}
+.summary {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 4;
+	overflow: hidden;
+}
+.item {
+	border-bottom: none !important;
+}

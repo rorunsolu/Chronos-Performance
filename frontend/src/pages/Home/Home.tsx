@@ -1,6 +1,7 @@
 import { Spotlight, spotlight } from "@mantine/spotlight";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	useInfiniteQuery,
 	useQuery,
@@ -33,8 +34,12 @@ interface HomePageGame {
 }
 
 const Home = () => {
+	const navigate = useNavigate();
+
 	const fetchHomepageGames = async ({ pageParam = 0 }) => {
-		const res = await fetch(`/api/IGDBapi/homepage?offset=${pageParam}`);
+		const res = await fetch(
+			`/api/IGDBapi/homepage?offset=${pageParam}`
+		);
 		return res.json();
 	};
 
@@ -131,6 +136,7 @@ const Home = () => {
 								radius="md"
 								withBorder
 								key={game.id}
+								onClick={() => navigate(`/game/${game.id}`)}
 							>
 								<Card.Section>
 									<Image
@@ -167,7 +173,11 @@ const Home = () => {
 							: "Nothing more to load"}
 				</Button>
 			</Stack>
-			<div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
+			<div>
+				{isFetching && !isFetchingNextPage
+					? "Fetching..."
+					: null}
+			</div>
 		</Container>
 	);
 };
@@ -225,7 +235,9 @@ const SpotlightSearch = () => {
 						c="dimmed"
 					>
 						{Array.isArray(item.genres)
-							? item.genres.map((genre) => genre.name).join(", ")
+							? item.genres
+									.map((genre) => genre.name)
+									.join(", ")
 							: "No genres available"}
 					</Text>
 				</Stack>
@@ -260,7 +272,9 @@ const SpotlightSearch = () => {
 				) : spotlightItems.length > 0 ? (
 					spotlightItems
 				) : (
-					<Spotlight.Empty>Nothing found...</Spotlight.Empty>
+					<Spotlight.Empty>
+						Nothing found...
+					</Spotlight.Empty>
 				)}
 			</Spotlight.ActionsList>
 		</Spotlight.Root>

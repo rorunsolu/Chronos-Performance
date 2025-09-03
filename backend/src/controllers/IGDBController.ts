@@ -16,8 +16,8 @@ export async function searchGamesByQuery(query: string) {
   const url = "https://api.igdb.com/v4/games";
   const body = `
   search "${query}"; 
-  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.category;
-  where cover != null & cover.image_id != null & websites.category = (13,16,17,18);
+  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.type;
+  where cover != null & cover.image_id != null & websites.type = (13,16,17,18);
   limit 20; 
   offset 0;
   `;
@@ -62,8 +62,8 @@ export async function getHomepageGames(req: Request, res: Response) {
   const url = "https://api.igdb.com/v4/games";
 
   const body = `
-  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.category;
-  where cover != null & cover.image_id != null & websites.category = (13,16,17,18);
+  fields name, cover.image_id, rating, genres.name, url, websites.url, websites.type;
+  where cover != null & cover.image_id != null & websites.type = (13,16,17,18);
   limit ${fetchLimit};
   offset ${offset};
 `;
@@ -91,5 +91,47 @@ export async function getHomepageGames(req: Request, res: Response) {
     return res
       .status(500)
       .json({ error: "Error (IGDBController) fetching homepage games" });
+  }
+}
+
+export async function getGamePageInfo(req: Request, res: Response) {
+  const accessToken = await getigdbAccessToken();
+  const clientID = process.env.IGDB_CLIENT_ID;
+
+  if (!accessToken || !clientID) {
+    throw new Error("IGDB access token or client ID not found");
+  }
+
+  const { id } = req.params;
+
+  const url = "https://api.igdb.com/v4/games";
+
+  const body = `
+  fields name, cover.image_id, summary, rating, genres.name, game_engines.name, websites.url, websites.type, release_dates.y;
+  where id = ${id} & cover != null & cover.image_id != null & websites.type = (13,16,17,18);
+  `;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Client-ID": clientID,
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Error (IGDBController) fetching game page info: ${response.status}`
+      );
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error (IGDBController) fetching game page info:", error);
+    throw new Error("Error (IGDBController) fetching game page info");
   }
 }

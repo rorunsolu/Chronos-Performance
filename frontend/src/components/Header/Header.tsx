@@ -1,5 +1,5 @@
 import { UserAuth } from "@/auth/AuthContext";
-import ChronosLogo from "@/components/ChronosLogo";
+import ChronosLogo from "@/components/Branding/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
 import { useDisclosure } from "@mantine/hooks";
 import cx from "clsx";
@@ -30,10 +30,7 @@ const Header = () => {
 		useState(false);
 
 	const navigate = useNavigate();
-	const {
-		//user,
-		logOut,
-	} = UserAuth();
+	const { user, logOut } = UserAuth();
 
 	const handleSignOut = async () => {
 		try {
@@ -60,13 +57,6 @@ const Header = () => {
 			{link.label}
 		</a>
 	));
-
-	const user = {
-		name: "Jane Spoonfighter",
-		email: "janspoon@fighter.dev",
-		image:
-			"https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png",
-	};
 
 	return (
 		<header className={classes.header}>
@@ -111,8 +101,8 @@ const Header = () => {
 							>
 								<Group gap={7}>
 									<Avatar
-										src={user.image}
-										alt={user.name}
+										src={user?.photoURL}
+										alt={user?.displayName ?? undefined}
 										radius="xl"
 										size={20}
 									/>
@@ -122,7 +112,7 @@ const Header = () => {
 										lh={1}
 										mr={3}
 									>
-										{user.name}
+										{user?.displayName}
 									</Text>
 									<ChevronsUpDown size={12} />
 								</Group>
@@ -137,12 +127,19 @@ const Header = () => {
 							</Menu.Item>
 							<Menu.Item
 								leftSection={<ArrowRightLeft size={16} />}
+								onClick={async () => {
+									await handleSignOut();
+									navigate("/portal");
+								}}
 							>
 								Change account
 							</Menu.Item>
 							<Menu.Item
 								leftSection={<LogOut size={16} />}
-								onClick={handleSignOut}
+								onClick={async () => {
+									await handleSignOut();
+									navigate("/portal");
+								}}
 							>
 								Logout
 							</Menu.Item>

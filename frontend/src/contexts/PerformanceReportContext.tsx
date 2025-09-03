@@ -89,8 +89,7 @@ export type GPUOptions =
 	| "RX 9070"
 	| "RX 9070 XT";
 
-type CPUOptions =
-	// Intel Core Series (1st-10th Gen)
+export type CPUOptions =
 	| "Core i3-9100"
 	| "Core i5-9400"
 	| "Core i7-9700"
@@ -99,8 +98,6 @@ type CPUOptions =
 	| "Core i5-10400"
 	| "Core i7-10700"
 	| "Core i9-10900"
-
-	// AMD Ryzen 1000-3000 Series
 	| "Ryzen 3 3100"
 	| "Ryzen 3 3300X"
 	| "Ryzen 5 3500"
@@ -110,14 +107,10 @@ type CPUOptions =
 	| "Ryzen 7 3800X"
 	| "Ryzen 9 3900X"
 	| "Ryzen 9 3950X"
-
-	// Intel 11th Gen
 	| "Core i5-11400"
 	| "Core i5-11600"
 	| "Core i7-11700"
 	| "Core i9-11900"
-
-	// AMD Ryzen 5000 Series
 	| "Ryzen 3 5300G"
 	| "Ryzen 5 5500"
 	| "Ryzen 5 5600"
@@ -131,27 +124,19 @@ type CPUOptions =
 	| "Ryzen 9 5900"
 	| "Ryzen 9 5900X"
 	| "Ryzen 9 5950X"
-
-	// Intel 12th Gen
 	| "Core i3-12100"
 	| "Core i5-12400"
 	| "Core i5-12600"
 	| "Core i7-12700"
 	| "Core i9-12900"
-
-	// AMD Ryzen 6000 Series (Mobile)
 	| "Ryzen 5 6600H"
 	| "Ryzen 7 6800H"
 	| "Ryzen 9 6900HX"
-
-	// Intel 13th Gen
 	| "Core i3-13100"
 	| "Core i5-13400"
 	| "Core i5-13600"
 	| "Core i7-13700"
 	| "Core i9-13900"
-
-	// AMD Ryzen 7000 Series
 	| "Ryzen 5 7500F"
 	| "Ryzen 5 7600"
 	| "Ryzen 5 7600X"
@@ -162,19 +147,13 @@ type CPUOptions =
 	| "Ryzen 9 7900X"
 	| "Ryzen 9 7950X"
 	| "Ryzen 9 7950X3D"
-
-	// Intel 14th Gen
 	| "Core i5-14400"
 	| "Core i5-14600"
 	| "Core i7-14700"
 	| "Core i9-14900"
-
-	// AMD Ryzen 8000 Series (APUs)
 	| "Ryzen 5 8500G"
 	| "Ryzen 5 8600G"
 	| "Ryzen 7 8700G"
-
-	// Current & Future Generations
 	| "Core i5-15500"
 	| "Core i5-15600"
 	| "Core i7-15700"
@@ -243,8 +222,8 @@ export type PerformanceReport = {
 
 	settings: {
 		upscaling: boolean; // for easy filtering
-		upscalingMethod: UpscalingMethod;
-		UpscalingQuality: UpscalingQuality;
+		upscalingMethod?: UpscalingMethod;
+		UpscalingQuality?: UpscalingQuality;
 
 		aspectRatio: AspectRatio;
 		resolution: Resolution;

@@ -8,4 +8,14 @@ body {
 
 	background: black;
 	color: white;
+
+	color: var(--mantine-color-white) !important;
 }
+
+.m_4ba554d4.mantine-Accordion-content {
+	padding: 0;
+}
+
+/* #mantine-k8uxlzjsn-control-instructions {
+	padding: 0;
+} */
