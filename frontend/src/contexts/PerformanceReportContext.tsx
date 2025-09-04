@@ -1,6 +1,7 @@
 import { db } from "@/auth/Firebase";
 import { getAuthenticatedUser } from "@/helpers/authChecker";
-import { createContext, useContext, useState } from "react";
+import { PerformanceReportContext } from "@/hooks/usePerformanceReportHook";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import {
 	Timestamp,
@@ -246,21 +247,7 @@ export type PerformanceReportContextType = {
 	deleteReport: (reportId: string) => Promise<void>;
 	createReport: (
 		report: PerformanceReport
-	) => Promise<void>;
-};
-
-const PerformanceReportContext = createContext<
-	PerformanceReportContextType | undefined
->(undefined);
-
-export const usePerformanceReport = () => {
-	const context = useContext(PerformanceReportContext);
-	if (!context) {
-		throw new Error(
-			"usePerformanceReport must be used within a PerformanceReportProvider"
-		);
-	}
-	return context;
+	) => Promise<string>;
 };
 
 export const PerformanceReportProvider = ({
@@ -279,7 +266,6 @@ export const PerformanceReportProvider = ({
 		);
 		const reportsData = reportsSnapshot.docs.map((doc) => ({
 			...doc.data(),
-			reportId: doc.id,
 		})) as PerformanceReport[];
 
 		setReports(
@@ -311,9 +297,9 @@ export const PerformanceReportProvider = ({
 				...prev,
 				{
 					...data,
-					reportId: docRef.id,
 				},
 			]);
+			return docRef.id;
 		} catch (error) {
 			throw new Error(`Error creating report: ${error}`);
 		}

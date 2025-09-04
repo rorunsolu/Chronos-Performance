@@ -1,23 +1,31 @@
-import styles from "./Game.module.css";
-import { usePerformanceReport } from "@/contexts/PerformanceReportContext";
+import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
+import styles from "@/pages/Game/Game.module.css";
+import cardStyles from "@/pages/Game/ReportCard.module.css";
 import { useForm } from "@mantine/form";
+import dayjs from "dayjs";
 import { Timestamp } from "firebase/firestore";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, User } from "lucide-react";
 import { useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import {
 	Accordion,
 	Badge,
+	Divider,
+	SimpleGrid,
 	Button,
 	Code,
 	Container,
 	Fieldset,
 	Group,
 	NumberInput,
+	Paper,
 	Select,
 	Stack,
 	Switch,
 	Text,
+	Title,
 } from "@mantine/core";
 import type {
 	GPUOptions,
@@ -78,7 +86,12 @@ type GameInfo = {
 
 const Game = () => {
 	const { id } = useParams<{ id: string }>();
-	const { createReport } = usePerformanceReport();
+	const { createReport, reports, fetchReports } =
+		usePerformanceReportHook();
+
+	const gameSpecificReports = reports.filter(
+		(report) => report.IgdbGameId === id
+	);
 
 	const { data, status, error } = useQuery<GameInfo[]>({
 		//* DATA REGARDING GAMES SHOULD ALWAYS BE AN ARRAY BRO FGS
@@ -137,7 +150,7 @@ const Game = () => {
 			const report: PerformanceReport = {
 				IgdbGameId: id ? id : "",
 				IgdbGameName: data ? data[0]?.name : "",
-				reportId: "",
+				reportId: uuidv4(),
 				userId: "",
 				createdAt: new Date() as unknown as Timestamp,
 
@@ -186,7 +199,14 @@ const Game = () => {
 		typeof form.values | null
 	>(null);
 
-	const [checked, setChecked] = useState(false);
+	useEffect(() => {
+		const fetchData = async () => {
+			await fetchReports();
+		};
+
+		fetchData();
+		// eslint-disable-next-line
+	}, []);
 
 	return status === "success" ? (
 		<Container
@@ -285,7 +305,7 @@ const Game = () => {
 						className={styles.accordion}
 					>
 						<Accordion.Item
-							value="instructions"
+							value="submitreport"
 							className={styles.item}
 						>
 							<Accordion.Control
@@ -307,20 +327,15 @@ const Game = () => {
 									})}
 								>
 									<Stack
-										mt="md"
 										gap="lg"
+										mt="lg"
 									>
 										<Switch
 											{...form.getInputProps(
-												"settings.upscaling"
+												"settings.upscaling",
+												{ type: "checkbox" }
 											)}
 											label="Upscaling Enabled?"
-											checked={checked}
-											onChange={(event) =>
-												setChecked(
-													event.currentTarget.checked
-												)
-											}
 										/>
 										<Fieldset
 											legend="Performance Metrics"
@@ -365,7 +380,9 @@ const Game = () => {
 										</Fieldset>
 
 										<Fieldset
-											disabled={checked === false}
+											disabled={
+												!form.values.settings.upscaling
+											}
 											legend="Upscaling"
 											variant="unstyled"
 										>
@@ -532,6 +549,32 @@ const Game = () => {
 							</Accordion.Panel>
 						</Accordion.Item>
 					</Accordion>
+
+					<Stack>
+						<Title
+							order={4}
+							fw={500}
+						>
+							Performance Reports
+						</Title>
+
+						{gameSpecificReports.length === 0 ? (
+							<Text>No reports yet. Be the first!</Text>
+						) : (
+							<SimpleGrid
+							// cols={{ base: 1, sm: 2, lg: 3 }}
+							>
+								{gameSpecificReports.map(
+									(report: PerformanceReport) => (
+										<ReportCard
+											key={report.reportId}
+											report={report}
+										/>
+									)
+								)}
+							</SimpleGrid>
+						)}
+					</Stack>
 				</Stack>
 			))}
 		</Container>
@@ -543,3 +586,187 @@ const Game = () => {
 };
 
 export default Game;
+
+export function ReportCard({
+	report,
+}: {
+	report: PerformanceReport;
+}) {
+	return (
+		<Paper
+			withBorder
+			radius="md"
+			className={cardStyles.comment}
+		>
+			<Group>
+				<Paper
+					withBorder
+					radius="xl"
+					p="xs"
+				>
+					<User size={16} />
+				</Paper>
+				<div>
+					<Text fz="sm">User</Text>
+					<Text
+						fz="xs"
+						c="dimmed"
+					>
+						{dayjs(report.createdAt.toDate()).format(
+							"MMMM D, YYYY"
+						)}
+					</Text>
+				</div>
+			</Group>
+			<Stack gap="1">
+				<Stack
+					gap="5"
+					mt="md"
+				>
+					{report.metrics.averageFps && (
+						<Group gap="5">
+							<Text fz="sm">Average FPS:</Text>
+							<Text fz="sm">
+								{report.metrics.averageFps}FPS
+							</Text>
+						</Group>
+					)}
+					{report.metrics.minFps && (
+						<Group gap="5">
+							<Text fz="sm">1% Lows:</Text>
+							<Text
+								fz="sm"
+								c="white"
+							>
+								{report.metrics.minFps}FPS
+							</Text>
+						</Group>
+					)}
+					{report.metrics.maxFps && (
+						<Group gap="5">
+							<Text fz="sm">Max FPS:</Text>
+							<Text fz="sm">
+								{report.metrics.maxFps}FPS
+							</Text>
+						</Group>
+					)}
+				</Stack>
+
+				<Accordion
+					transitionDuration={0}
+					chevronPosition="left"
+				>
+					<Accordion.Item
+						value="viewmore"
+						className={cardStyles.accordion}
+					>
+						<Accordion.Control
+							mt="lg"
+							bdrs="sm"
+						>
+							<Group justify="flex-start">
+								<Text size="sm">View More</Text>
+							</Group>
+						</Accordion.Control>
+						<Accordion.Panel>
+							<Stack
+								gap="5"
+								mt="5"
+							>
+								<Divider
+									my="xs"
+									label="Settings"
+									labelPosition="left"
+								/>
+								<Group gap="5">
+									<Text fz="sm">Upscaling:</Text>
+									<Text fz="sm">
+										{report.settings.upscaling
+											? "Enabled"
+											: "Disabled"}
+									</Text>
+								</Group>
+								{report.settings.upscalingMethod && (
+									<Group gap="5">
+										<Text fz="sm">Upscaling Method:</Text>
+										<Text fz="sm">
+											{report.settings.upscalingMethod}
+										</Text>
+									</Group>
+								)}
+								{report.settings.UpscalingQuality && (
+									<Group gap="5">
+										<Text fz="sm">Upscaling Quality:</Text>
+										<Text fz="sm">
+											{report.settings.UpscalingQuality}
+										</Text>
+									</Group>
+								)}
+								<Group gap="5">
+									<Text fz="sm">Aspect Ratio:</Text>
+									<Text fz="sm">
+										{report.settings.aspectRatio}
+									</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">Resolution:</Text>
+									<Text fz="sm">
+										{report.settings.resolution}
+									</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">Graphics Preset:</Text>
+									<Text fz="sm">
+										{report.settings.averageGraphicsPreset}
+									</Text>
+								</Group>
+							</Stack>
+
+							<Stack
+								gap="5"
+								mt="5"
+							>
+								<Divider
+									my="xs"
+									label="Hardware"
+									labelPosition="left"
+								/>
+
+								<Group gap="5">
+									<Text fz="sm">CPU:</Text>
+									<Text fz="sm">{report.hardware.cpu}</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">GPU:</Text>
+									<Text fz="sm">{report.hardware.gpu}</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">RAM:</Text>
+									<Text fz="sm">{report.hardware.ram}</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">VRAM:</Text>
+									<Text fz="sm">
+										{report.hardware.vram}
+									</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">Storage Type:</Text>
+									<Text fz="sm">
+										{report.hardware.storageType}
+									</Text>
+								</Group>
+								<Group gap="5">
+									<Text fz="sm">Hardware Type:</Text>
+									<Text fz="sm">
+										{report.hardware.hardwareType}
+									</Text>
+								</Group>
+							</Stack>
+						</Accordion.Panel>
+					</Accordion.Item>
+				</Accordion>
+			</Stack>
+		</Paper>
+	);
+}
