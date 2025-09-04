@@ -187,6 +187,7 @@ export default Home;
 const SpotlightSearch = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [updatedAt, setUpdatedAt] = useState(0);
+	const navigate = useNavigate();
 
 	const { data, dataUpdatedAt, isFetching } = useQuery({
 		queryKey: ["spotlightResults", searchQuery],
@@ -214,7 +215,10 @@ const SpotlightSearch = () => {
 				.includes(searchQuery.toLowerCase().trim())
 		)
 		.map((item: HomePageGame) => (
-			<Spotlight.Action key={item.id}>
+			<Spotlight.Action
+				key={item.id}
+				onClick={() => navigate(`/game/${item.id}`)}
+			>
 				<img
 					src={
 						item.cover

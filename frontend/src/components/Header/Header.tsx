@@ -14,9 +14,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import {
-	Settings,
 	ArrowRightLeft,
-	Trash2,
 	LogOut,
 	ChevronsUpDown,
 } from "lucide-react";
@@ -119,12 +117,6 @@ const Header = () => {
 							</UnstyledButton>
 						</Menu.Target>
 						<Menu.Dropdown>
-							<Menu.Label>Settings</Menu.Label>
-							<Menu.Item
-								leftSection={<Settings size={16} />}
-							>
-								Account settings
-							</Menu.Item>
 							<Menu.Item
 								leftSection={<ArrowRightLeft size={16} />}
 								onClick={async () => {
@@ -142,16 +134,6 @@ const Header = () => {
 								}}
 							>
 								Logout
-							</Menu.Item>
-
-							<Menu.Divider />
-
-							<Menu.Label>Danger zone</Menu.Label>
-							<Menu.Item
-								color="red"
-								leftSection={<Trash2 size={16} />}
-							>
-								Delete account
 							</Menu.Item>
 						</Menu.Dropdown>
 					</Menu>
