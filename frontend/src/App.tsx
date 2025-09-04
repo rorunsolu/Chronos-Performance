@@ -1,5 +1,6 @@
 import "@/App.css";
 import Header from "@/components/Header/Header";
+import Game from "@/pages/Game/Game";
 import Home from "@/pages/Home/Home";
 import Portal from "@/pages/Portal/Portal";
 import "@mantine/core/styles.css";
@@ -36,6 +37,10 @@ function App() {
 						<Route
 							path="/portal"
 							element={<Portal />}
+						/>
+						<Route
+							path="/game/:id"
+							element={<Game />}
 						/>
 					</Routes>
 				</AppShell.Main>

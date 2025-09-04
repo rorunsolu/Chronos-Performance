@@ -1,6 +1,6 @@
 import { UserAuth } from "@/auth/AuthContext";
-import ChronosLogo from "@/components/ChronosLogo";
-import GoogleLogo from "@/components/GoogleLogo";
+import ChronosLogo from "@/components/Branding/ChronosLogo";
+import { GoogleButton } from "@/components/Button/GoogleButton";
 import styles from "@/pages/Portal/Portal.module.css";
 import { isEmail, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
@@ -31,14 +31,14 @@ const Portal = () => {
 		user,
 	} = UserAuth();
 	const [error, setError] = useState<string | null>(null);
-	const icon = <GoogleLogo />;
 
 	const handleGoogleSignUp = async () => {
 		try {
 			await googleSignIn();
 		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.error("Google sign-in failed:", error);
+			throw new Error(
+				"Google sign-in failed. Please try again."
+			);
 		}
 	};
 
@@ -55,8 +55,12 @@ const Portal = () => {
 					return "Password must be at least 6 characters";
 				}
 
-				if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{}|;':",.<>/?]).{1,}$/.test(value)) {
-					return "Password must have at least 1 capital letter, 1 number, and 1 special character";
+				if (
+					!/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{}|;':",.<>/?]).{1,}$/.test(
+						value
+					)
+				) {
+					return "Password must have at least 1 uppercase letter, 1 number, and 1 special character";
 				}
 				return null;
 			},
@@ -110,7 +114,7 @@ const Portal = () => {
 
 	useEffect(() => {
 		if (user != null) {
-			navigate("/home", { replace: true });
+			navigate("/", { replace: true });
 		}
 	}, [user, navigate]);
 
@@ -247,7 +251,7 @@ const Portal = () => {
 											>
 												<Checkbox
 													checked={
-														form.values.password.length >= 8
+														form.values.password.length >= 6
 													}
 													readOnly
 													size="xs"
@@ -256,7 +260,7 @@ const Portal = () => {
 													fz="xs"
 													c="dimmed"
 												>
-													Must be at least 8 characters
+													Must be at least 6 characters
 												</Text>
 											</Group>
 											<Group
@@ -277,6 +281,24 @@ const Portal = () => {
 													Must contain one special character
 												</Text>
 											</Group>
+											<Group
+												gap={8}
+												align="center"
+											>
+												<Checkbox
+													checked={/[A-Z]/.test(
+														form.values.password
+													)}
+													readOnly
+													size="xs"
+												/>
+												<Text
+													fz="xs"
+													c="dimmed"
+												>
+													Must contain one uppercase letter
+												</Text>
+											</Group>
 										</Stack>
 										<Button
 											type="submit"
@@ -292,14 +314,13 @@ const Portal = () => {
 											mb="md"
 										/>
 										<Stack gap="xs">
-											<Button
+											<GoogleButton
 												variant="default"
-												leftSection={icon}
 												fullWidth
 												onClick={handleGoogleSignUp}
 											>
 												Sign up with Google
-											</Button>
+											</GoogleButton>
 											<Button
 												variant="default"
 												fullWidth
@@ -376,14 +397,13 @@ const Portal = () => {
 											mb="md"
 										/>
 										<Stack gap="xs">
-											<Button
+											<GoogleButton
 												variant="default"
-												leftSection={icon}
 												fullWidth
 												onClick={handleGoogleSignUp}
 											>
 												Log in with Google
-											</Button>
+											</GoogleButton>
 											<Button
 												variant="default"
 												fullWidth

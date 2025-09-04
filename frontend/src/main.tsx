@@ -1,5 +1,6 @@
 import App from "@/App";
 import { AuthContextProvider } from "@/auth/AuthContext";
+import { PerformanceReportProvider } from "@/contexts/PerformanceReportContext";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -22,7 +23,9 @@ if (!rootElement.innerHTML) {
 			<BrowserRouter>
 				<QueryClientProvider client={queryClient}>
 					<AuthContextProvider>
-						<App />
+						<PerformanceReportProvider>
+							<App />
+						</PerformanceReportProvider>
 					</AuthContextProvider>
 					<ReactQueryDevtools initialIsOpen={true} />
 				</QueryClientProvider>

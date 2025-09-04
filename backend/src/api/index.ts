@@ -1,3 +1,4 @@
+import gamepageApi from "../routes/gamepageApi";
 import homepageApi from "../routes/homepageApi";
 import resultsApi from "../routes/resultsApi";
 import cors from "cors";
@@ -25,6 +26,7 @@ app.listen(3000, () => {
 
 app.use("/api/IGDBapi/results", resultsApi);
 app.use("/api/IGDBapi/homepage", homepageApi);
+app.use("/api/IGDBapi/gamepage", gamepageApi);
 
 // Docs
 // https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Displaying_data
