@@ -1,32 +1,32 @@
+import ReportCard from "@/components/Card/ReportCard";
+import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import styles from "@/pages/Game/Game.module.css";
-import cardStyles from "@/pages/Game/ReportCard.module.css";
 import { useForm } from "@mantine/form";
-import dayjs from "dayjs";
+import { notifications } from "@mantine/notifications";
 import { Timestamp } from "firebase/firestore";
-import { ChevronsUpDown, User } from "lucide-react";
-import { useState } from "react";
+import { Ban, Check } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
 	Accordion,
 	Badge,
-	Divider,
-	SimpleGrid,
 	Button,
-	Code,
 	Container,
 	Fieldset,
 	Group,
+	Image,
 	NumberInput,
-	Paper,
 	Select,
+	SimpleGrid,
 	Stack,
 	Switch,
 	Text,
 	Title,
 } from "@mantine/core";
+import StarRating from "@/components/Star Rating/StarRating";
+import type { GameInfo } from "@/hooks/useGameDetails";
 import type {
 	GPUOptions,
 	UpscalingQuality,
@@ -54,36 +54,6 @@ import {
 	CPUs,
 	UpscalingQualitys,
 } from "../../common";
-import {
-	keepPreviousData,
-	useQuery,
-} from "@tanstack/react-query";
-
-type GameInfo = {
-	id: number;
-	name: string;
-	cover: {
-		image_id: string;
-	};
-	summary: string;
-	rating: number;
-	genres: {
-		name: string;
-	}[];
-	url: string;
-	game_engines: {
-		name: string;
-		logo?: string;
-	}[];
-	websites: {
-		url: string;
-		type: number;
-	}[];
-	release_dates: {
-		y: number;
-	}[];
-};
-
 const Game = () => {
 	const { id } = useParams<{ id: string }>();
 	const { createReport, reports, fetchReports } =
@@ -93,22 +63,7 @@ const Game = () => {
 		(report) => report.IgdbGameId === id
 	);
 
-	const { data, status, error } = useQuery<GameInfo[]>({
-		//* DATA REGARDING GAMES SHOULD ALWAYS BE AN ARRAY BRO FGS
-		queryKey: ["gameInformation", id],
-		queryFn: async () => {
-			const response = await fetch(
-				`/api/IGDBapi/gamepage/${id}`
-			);
-			if (!response.ok) {
-				throw new Error(
-					`Failed to fetch game: ${response.status}`
-				);
-			}
-			return response.json();
-		},
-		placeholderData: keepPreviousData,
-	});
+	const { data, status, error } = useGameDetails(id);
 
 	const form = useForm({
 		mode: "uncontrolled",
@@ -142,6 +97,25 @@ const Game = () => {
 			},
 		},
 	});
+
+	const handleSuccessNotification = () => {
+		notifications.show({
+			title: "Report Submitted",
+			message:
+				"Your report has been submitted successfully!",
+			color: "teal",
+			icon: <Check />,
+		});
+	};
+
+	const handleErrorNotification = () => {
+		notifications.show({
+			title: "Report Submission Failed",
+			message: "There was an error submitting your report.",
+			color: "red",
+			icon: <Ban />,
+		});
+	};
 
 	const handleSubmit = async (
 		values: typeof form.values
@@ -188,16 +162,12 @@ const Game = () => {
 				},
 			};
 			await createReport(report);
-			alert("Report submitted successfully!");
+			handleSuccessNotification();
 		} catch (error) {
-			console.error("Error submitting report:", error);
-			alert("Failed to submit the report.");
+			handleErrorNotification();
+			throw new Error("Failed to create report");
 		}
 	};
-
-	const [submittedValues, setSubmittedValues] = useState<
-		typeof form.values | null
-	>(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -205,26 +175,29 @@ const Game = () => {
 		};
 
 		fetchData();
-		// eslint-disable-next-line
 	}, []);
 
 	return status === "success" ? (
 		<Container
-			size="lg"
+			size="md"
 			my="lg"
 		>
 			{data.map((game: GameInfo) => (
 				<Stack key={game.id}>
 					<Group>
-						<img
-							src={
-								game.cover
-									? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
-									: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-							}
-							alt={`The game cover for ${game.name}`}
-							className={styles.cover}
-						/>
+						<div className="relative">
+							<Image
+								src={
+									game.cover
+										? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
+										: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+								}
+								alt={`The game cover for ${game.name}`}
+								className={styles.cover}
+								bdrs="sm"
+							/>
+							<StarRating rating={game.rating} />
+						</div>
 
 						<Stack gap="xs">
 							<Text
@@ -261,22 +234,6 @@ const Game = () => {
 						</Stack>
 					</Group>
 					<Stack gap="5">
-						{typeof game.rating === "number" && (
-							<Badge
-								radius="sm"
-								size="lg"
-								mb="sm"
-								variant="gradient"
-								gradient={{
-									from: "blue",
-									to: "teal",
-									deg: 200,
-								}}
-							>
-								{Math.round(game.rating)} {""}/ {""}100
-							</Badge>
-						)}
-
 						{game.release_dates?.length && (
 							<Text size="sm">
 								Release Date: {game.release_dates[0].y}
@@ -298,9 +255,6 @@ const Game = () => {
 					</Stack>
 
 					<Accordion
-						chevronSize={16}
-						chevron={<ChevronsUpDown />}
-						disableChevronRotation
 						transitionDuration={0}
 						className={styles.accordion}
 					>
@@ -308,21 +262,19 @@ const Game = () => {
 							value="submitreport"
 							className={styles.item}
 						>
-							<Accordion.Control
-								className={styles.control}
-								bdrs="sm"
-							>
-								<Text
-									size="sm"
-									c="white"
+							<Accordion.Control className={styles.control}>
+								<Button
+									variant="outline"
+									color="teal"
+									mt="5"
+									mb="sm"
 								>
-									Submit a report
-								</Text>
+									Start a report
+								</Button>
 							</Accordion.Control>
 							<Accordion.Panel>
 								<form
 									onSubmit={form.onSubmit(() => {
-										setSubmittedValues(form.values);
 										handleSubmit(form.values);
 									})}
 								>
@@ -529,22 +481,6 @@ const Game = () => {
 									>
 										Submit
 									</Button>
-
-									<Text mt="md">Form values:</Text>
-									<Code block>
-										{JSON.stringify(form.values, null, 2)}
-									</Code>
-
-									<Text mt="md">Submitted values:</Text>
-									<Code block>
-										{submittedValues
-											? JSON.stringify(
-													submittedValues,
-													null,
-													2
-												)
-											: "–"}
-									</Code>
 								</form>
 							</Accordion.Panel>
 						</Accordion.Item>
@@ -561,9 +497,7 @@ const Game = () => {
 						{gameSpecificReports.length === 0 ? (
 							<Text>No reports yet. Be the first!</Text>
 						) : (
-							<SimpleGrid
-							// cols={{ base: 1, sm: 2, lg: 3 }}
-							>
+							<SimpleGrid>
 								{gameSpecificReports.map(
 									(report: PerformanceReport) => (
 										<ReportCard
@@ -586,187 +520,3 @@ const Game = () => {
 };
 
 export default Game;
-
-export function ReportCard({
-	report,
-}: {
-	report: PerformanceReport;
-}) {
-	return (
-		<Paper
-			withBorder
-			radius="md"
-			className={cardStyles.comment}
-		>
-			<Group>
-				<Paper
-					withBorder
-					radius="xl"
-					p="xs"
-				>
-					<User size={16} />
-				</Paper>
-				<div>
-					<Text fz="sm">User</Text>
-					<Text
-						fz="xs"
-						c="dimmed"
-					>
-						{dayjs(report.createdAt.toDate()).format(
-							"MMMM D, YYYY"
-						)}
-					</Text>
-				</div>
-			</Group>
-			<Stack gap="1">
-				<Stack
-					gap="5"
-					mt="md"
-				>
-					{report.metrics.averageFps && (
-						<Group gap="5">
-							<Text fz="sm">Average FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.averageFps}FPS
-							</Text>
-						</Group>
-					)}
-					{report.metrics.minFps && (
-						<Group gap="5">
-							<Text fz="sm">1% Lows:</Text>
-							<Text
-								fz="sm"
-								c="white"
-							>
-								{report.metrics.minFps}FPS
-							</Text>
-						</Group>
-					)}
-					{report.metrics.maxFps && (
-						<Group gap="5">
-							<Text fz="sm">Max FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.maxFps}FPS
-							</Text>
-						</Group>
-					)}
-				</Stack>
-
-				<Accordion
-					transitionDuration={0}
-					chevronPosition="left"
-				>
-					<Accordion.Item
-						value="viewmore"
-						className={cardStyles.accordion}
-					>
-						<Accordion.Control
-							mt="lg"
-							bdrs="sm"
-						>
-							<Group justify="flex-start">
-								<Text size="sm">View More</Text>
-							</Group>
-						</Accordion.Control>
-						<Accordion.Panel>
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Settings"
-									labelPosition="left"
-								/>
-								<Group gap="5">
-									<Text fz="sm">Upscaling:</Text>
-									<Text fz="sm">
-										{report.settings.upscaling
-											? "Enabled"
-											: "Disabled"}
-									</Text>
-								</Group>
-								{report.settings.upscalingMethod && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Method:</Text>
-										<Text fz="sm">
-											{report.settings.upscalingMethod}
-										</Text>
-									</Group>
-								)}
-								{report.settings.UpscalingQuality && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Quality:</Text>
-										<Text fz="sm">
-											{report.settings.UpscalingQuality}
-										</Text>
-									</Group>
-								)}
-								<Group gap="5">
-									<Text fz="sm">Aspect Ratio:</Text>
-									<Text fz="sm">
-										{report.settings.aspectRatio}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Resolution:</Text>
-									<Text fz="sm">
-										{report.settings.resolution}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Graphics Preset:</Text>
-									<Text fz="sm">
-										{report.settings.averageGraphicsPreset}
-									</Text>
-								</Group>
-							</Stack>
-
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Hardware"
-									labelPosition="left"
-								/>
-
-								<Group gap="5">
-									<Text fz="sm">CPU:</Text>
-									<Text fz="sm">{report.hardware.cpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">GPU:</Text>
-									<Text fz="sm">{report.hardware.gpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">RAM:</Text>
-									<Text fz="sm">{report.hardware.ram}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">VRAM:</Text>
-									<Text fz="sm">
-										{report.hardware.vram}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Storage Type:</Text>
-									<Text fz="sm">
-										{report.hardware.storageType}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Hardware Type:</Text>
-									<Text fz="sm">
-										{report.hardware.hardwareType}
-									</Text>
-								</Group>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
-			</Stack>
-		</Paper>
-	);
-}

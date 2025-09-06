@@ -19,7 +19,7 @@ const ChronosLogo = () => {
 				className="h-6 w-6"
 			/>
 
-			<Title order={5}>Chronos</Title>
+			<Title order={6}>Chronos</Title>
 		</Group>
 	);
 };

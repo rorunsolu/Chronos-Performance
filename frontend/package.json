@@ -7,13 +7,16 @@
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"vitest": "vitest run",
+		"vitest:watch": "vitest"
 	},
 	"dependencies": {
-		"@mantine/core": "^8.2.7",
-		"@mantine/form": "^8.2.7",
-		"@mantine/hooks": "^8.2.7",
-		"@mantine/spotlight": "^8.2.7",
+		"@mantine/core": "^8.2.8",
+		"@mantine/form": "^8.2.8",
+		"@mantine/hooks": "^8.2.8",
+		"@mantine/notifications": "^8.2.8",
+		"@mantine/spotlight": "^8.2.8",
 		"@tailwindcss/vite": "^4.1.12",
 		"@tanstack/react-query": "^5.85.5",
 		"@tanstack/react-query-devtools": "^5.85.5",
@@ -32,6 +35,10 @@
 	"devDependencies": {
 		"@eslint/js": "^9.33.0",
 		"@tanstack/eslint-plugin-query": "^5.83.1",
+		"@testing-library/dom": "^10.4.1",
+		"@testing-library/jest-dom": "^6.8.0",
+		"@testing-library/react": "^16.3.0",
+		"@testing-library/user-event": "^14.6.1",
 		"@types/node": "^24.3.0",
 		"@types/react": "^19.1.10",
 		"@types/react-dom": "^19.1.7",
@@ -43,11 +50,13 @@
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.20",
 		"globals": "^16.3.0",
+		"jsdom": "^26.1.0",
 		"postcss": "^8.5.6",
 		"postcss-preset-mantine": "^1.18.0",
 		"postcss-simple-vars": "^7.0.1",
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.39.1",
-		"vite": "^7.1.2"
+		"vite": "^7.1.2",
+		"vitest": "^3.2.4"
 	}
 }

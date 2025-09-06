@@ -6,6 +6,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import {
+	ColorSchemeScript,
+	MantineProvider,
+	Button,
+	createTheme,
+} from "@mantine/core";
+import {
 	QueryClient,
 	QueryClientProvider,
 } from "@tanstack/react-query";
@@ -16,6 +22,19 @@ const rootElement = document.getElementById(
 	"root"
 ) as HTMLElement;
 
+const theme = createTheme({
+	fontFamily: "Inter, sans-serif",
+	cursorType: "pointer",
+	components: {
+		Button: Button.extend({
+			defaultProps: {
+				color: "teal",
+				variant: "light",
+			},
+		}),
+	},
+});
+
 if (!rootElement.innerHTML) {
 	const root = createRoot(rootElement);
 	root.render(
@@ -24,7 +43,13 @@ if (!rootElement.innerHTML) {
 				<QueryClientProvider client={queryClient}>
 					<AuthContextProvider>
 						<PerformanceReportProvider>
-							<App />
+							<ColorSchemeScript defaultColorScheme="auto" />
+							<MantineProvider
+								defaultColorScheme="auto"
+								theme={theme}
+							>
+								<App />
+							</MantineProvider>
 						</PerformanceReportProvider>
 					</AuthContextProvider>
 					<ReactQueryDevtools initialIsOpen={true} />

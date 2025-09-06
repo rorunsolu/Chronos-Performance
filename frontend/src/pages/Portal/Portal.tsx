@@ -191,6 +191,7 @@ const Portal = () => {
 										value="signup"
 										ref={setControlRef("signup")}
 										className={styles.tab}
+										bdrs="sm"
 									>
 										Sign up
 									</Tabs.Tab>
@@ -198,6 +199,7 @@ const Portal = () => {
 										value="login"
 										ref={setControlRef("login")}
 										className={styles.tab}
+										bdrs="sm"
 									>
 										Log in
 									</Tabs.Tab>
@@ -210,6 +212,7 @@ const Portal = () => {
 										}
 										parent={rootRef}
 										className={styles.indicator}
+										bdrs="sm"
 									/>
 								</Tabs.List>
 							</Tabs>
@@ -352,6 +355,7 @@ const Portal = () => {
 												onClick={() =>
 													setActiveTab("login")
 												}
+												fz="sm"
 											>
 												Log in
 											</Anchor>
@@ -436,6 +440,7 @@ const Portal = () => {
 												onClick={() =>
 													setActiveTab("signup")
 												}
+												fz="sm"
 											>
 												Sign up
 											</Anchor>

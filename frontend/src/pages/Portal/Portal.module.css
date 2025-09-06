@@ -20,16 +20,19 @@
 	font-weight: 500;
 	transition: color 100ms ease;
 	color: var(--mantine-color-gray-7);
-	border-radius: calc(0.25rem * 1);
+	border-radius: var(--mantine-spacing-sm);
 
 	&[data-active] {
+		transition: color 100ms ease;
 		color: var(--mantine-color-black);
 	}
 
 	@mixin dark {
 		color: var(--mantine-color-dark-1);
+		transition: color 100ms ease;
 
 		&[data-active] {
+			transition: color 100ms ease;
 			color: var(--mantine-color-white);
 		}
 	}
