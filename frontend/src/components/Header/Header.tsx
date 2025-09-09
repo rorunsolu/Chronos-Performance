@@ -35,10 +35,7 @@ const Header = () => {
 		{ getInitialValueInEffect: true }
 	);
 
-	const links = [
-		{ link: "/", label: "Home" },
-		{ link: "/about", label: "About" },
-	];
+	const links = [{ link: "/", label: "Home" }];
 	const [active, setActive] = useState(links[0].link);
 
 	const [opened, { toggle }] = useDisclosure(false);
@@ -46,7 +43,7 @@ const Header = () => {
 		useState(false);
 
 	const navigate = useNavigate();
-	const { user, logOut } = UserAuth();
+	const { user, logOut, allUsers } = UserAuth();
 
 	const handleSignOut = async () => {
 		try {
@@ -57,6 +54,10 @@ const Header = () => {
 			);
 		}
 	};
+
+	const profileUrlId = allUsers.find(
+		(account) => account.accUid === user?.uid
+	)?.accUrlId;
 
 	const items = links.map((link) => (
 		<a
@@ -162,7 +163,7 @@ const Header = () => {
 									<Menu.Item
 										leftSection={<User size={16} />}
 										onClick={async () => {
-											navigate("/profile");
+											navigate(`/profile/${profileUrlId}`);
 										}}
 									>
 										My Profile

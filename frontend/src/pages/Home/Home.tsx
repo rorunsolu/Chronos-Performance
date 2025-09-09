@@ -175,11 +175,6 @@ const Home = () => {
 							: "Nothing more to load"}
 				</Button>
 			</Stack>
-			<div>
-				{isFetching && !isFetchingNextPage
-					? "Fetching..."
-					: null}
-			</div>
 		</Container>
 	);
 };

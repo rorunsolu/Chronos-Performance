@@ -1,5 +1,6 @@
 import { auth } from "@/auth/Firebase";
 import { db } from "@/auth/Firebase";
+import { v4 as uuidv4 } from "uuid";
 import {
 	doc,
 	getDoc,
@@ -7,8 +8,11 @@ import {
 	arrayUnion,
 	arrayRemove,
 	updateDoc,
+	collection,
+	getDocs,
+	serverTimestamp,
+	Timestamp,
 } from "firebase/firestore";
-
 import {
 	createContext,
 	useContext,
@@ -32,6 +36,17 @@ const AuthContext = createContext<
 	AuthContextType | undefined
 >(undefined);
 
+export type userAccount = {
+	accUid: string;
+	accUrlId: string;
+	accEmail: string | null;
+	accCreationDate: Timestamp;
+	accName: string;
+	accPhotoURL: string | null;
+	favorites: number[];
+	reports: string[];
+};
+
 export const AuthContextProvider: React.FC<
 	AuthContextProviderProps
 > = ({ children }) => {
@@ -40,6 +55,9 @@ export const AuthContextProvider: React.FC<
 	const [isGuest, setIsGuest] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [favorites, setFavorites] = useState<number[]>([]);
+	const [allUsers, setAllUsers] = useState<userAccount[]>(
+		[]
+	);
 
 	const addFavorite = async (gameId: number) => {
 		if (!user) {
@@ -61,6 +79,26 @@ export const AuthContextProvider: React.FC<
 			setFavorites((prev) =>
 				prev.filter((id) => id !== gameId)
 			);
+		}
+	};
+
+	const fetchUsers = async () => {
+		try {
+			const userCollection = collection(db, "users");
+			const userSnapshot = await getDocs(userCollection);
+			const allUserdata = userSnapshot.docs.map((doc) => ({
+				...doc.data(),
+			})) as userAccount[];
+
+			setAllUsers(
+				allUserdata.sort(
+					(a, b) =>
+						a.accCreationDate.toMillis() -
+						b.accCreationDate.toMillis()
+				)
+			);
+		} catch (error) {
+			throw new Error("Failed to fetch users");
 		}
 	};
 
@@ -94,8 +132,9 @@ export const AuthContextProvider: React.FC<
 		if (!userDoc.exists()) {
 			await setDoc(userRef, {
 				accUid: user.uid,
+				accUrlId: uuidv4(),
 				accEmail: user.email,
-				accCreationDate: new Date(),
+				accCreationDate: serverTimestamp(),
 				accName: user.displayName || "Anonymous",
 				accPhotoURL: user.photoURL || null,
 				favorites: [],
@@ -193,6 +232,8 @@ export const AuthContextProvider: React.FC<
 				user,
 				isGuest,
 				favorites,
+				allUsers,
+				fetchUsers,
 			}}
 		>
 			{!loading && children}
@@ -229,6 +270,8 @@ interface AuthContextType {
 	logOut: () => void;
 	user: User | null;
 	isGuest: boolean;
+	allUsers: userAccount[];
+	fetchUsers: () => Promise<void>;
 }
 
 interface AuthContextProviderProps {

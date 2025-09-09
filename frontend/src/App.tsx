@@ -5,12 +5,12 @@ import Game from "@/pages/Game/Game";
 import Home from "@/pages/Home/Home";
 import Portal from "@/pages/Portal/Portal";
 import Profile from "@/pages/Profile/Profile";
+import { AppShell } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import "@mantine/spotlight/styles.css";
 import { Route, Routes } from "react-router-dom";
-import { AppShell } from "@mantine/core";
 
 function App() {
 	return (
@@ -32,7 +32,7 @@ function App() {
 							element={<Portal />}
 						/>
 						<Route
-							path="/profile"
+							path="/profile/:accUrlId"
 							element={
 								<Protected>
 									<Profile />

@@ -26,8 +26,9 @@ export type GameInfo = {
 };
 
 export const useGameDetails = (id: string | undefined) => {
-	return useQuery<GameInfo[]>({
-		//* DATA REGARDING GAMES SHOULD ALWAYS BE AN ARRAY BRO FGS
+	const { data, error, isFetching, status } = useQuery<
+		GameInfo[]
+	>({
 		queryKey: ["gameInformation", id],
 		queryFn: async () => {
 			const response = await fetch(
@@ -40,6 +41,8 @@ export const useGameDetails = (id: string | undefined) => {
 			}
 			return response.json();
 		},
-		placeholderData: [],
+		// placeholderData: [], // this was causing an issue with the pending/isfetching statuses preventing the skeletons from appearing during those statuses
 	});
+
+	return { data, error, isFetching, status };
 };

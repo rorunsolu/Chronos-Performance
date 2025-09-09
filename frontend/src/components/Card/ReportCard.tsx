@@ -1,7 +1,10 @@
+import { UserAuth } from "@/auth/AuthContext";
 import cardStyles from "@/components/Card/ReportCard.module.css";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import dayjs from "dayjs";
 import { User } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	Accordion,
 	Divider,
@@ -9,6 +12,7 @@ import {
 	Paper,
 	Stack,
 	Text,
+	Image,
 } from "@mantine/core";
 import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
 
@@ -19,9 +23,26 @@ const ReportCard = ({
 	report: PerformanceReport;
 	isProfilePage?: boolean;
 }) => {
+	"use no memo";
 	const { data: gameDetails } = useGameDetails(
 		report.IgdbGameId
 	);
+
+	const navigate = useNavigate();
+	const { allUsers, fetchUsers } = UserAuth();
+
+	const authorAvatar =
+		allUsers.find(
+			(userAcc) => report.userId === userAcc.accUid
+		)?.accPhotoURL || null;
+
+	useEffect(() => {
+		const fetchData = async () => {
+			await fetchUsers();
+		};
+
+		fetchData();
+	}, []);
 
 	return (
 		<Paper
@@ -29,14 +50,42 @@ const ReportCard = ({
 			radius="md"
 			className={cardStyles.comment}
 		>
-			<Group>
+			<Group
+				onClick={() => {
+					{
+						!isProfilePage &&
+							navigate(
+								`/profile/${allUsers.find((userAcc) => userAcc.accUid === report.userId)?.accUrlId}`
+							);
+					}
+				}}
+				className={
+					isProfilePage ? "" : "cursor-pointer max-w-fit"
+				}
+			>
 				{!isProfilePage && (
 					<Paper
 						withBorder
-						radius="xl"
-						p="xs"
+						radius={100}
+						className="overflow-hidden"
+						w={40}
+						h={40}
 					>
-						<User size={16} />
+						{authorAvatar ? (
+							<Image
+								src={authorAvatar}
+								content="no-referrer"
+								referrerPolicy="no-referrer"
+							/>
+						) : (
+							<Paper
+								withBorder
+								radius="xl"
+								p="xs"
+							>
+								<User size={16} />
+							</Paper>
+						)}
 					</Paper>
 				)}
 
@@ -74,7 +123,14 @@ const ReportCard = ({
 						</Group>
 					) : (
 						<>
-							<Text fz="sm">User</Text>
+							<Text fz="sm">
+								{
+									allUsers.find(
+										(userAcc) =>
+											userAcc.accUid === report.userId
+									)?.accName
+								}
+							</Text>
 							<Text
 								fz="xs"
 								c="dimmed"
@@ -124,6 +180,9 @@ const ReportCard = ({
 				<Accordion
 					transitionDuration={0}
 					chevronPosition="left"
+					onClick={(e) => {
+						e.stopPropagation();
+					}}
 				>
 					<Accordion.Item
 						value="viewmore"

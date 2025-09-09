@@ -22,25 +22,26 @@ import {
 	SimpleGrid,
 	Stack,
 	Switch,
+	Skeleton,
 	Text,
 	Title,
 } from "@mantine/core";
 import StarRating from "@/components/Star Rating/StarRating";
 import type { GameInfo } from "@/hooks/useGameDetails";
+import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
 import type {
 	GPUOptions,
-	UpscalingQuality,
-	CPUOptions,
-	UpscalingMethod,
-	Resolution,
-	AspectRatio,
-	AverageGraphicsPreset,
-	RAMOptions,
 	VRAMOptions,
+	RAMOptions,
+	CPUOptions,
 	StorageType,
 	HardwareType,
-	PerformanceReport,
-} from "@/contexts/PerformanceReportContext";
+	AspectRatio,
+	Resolution,
+	AverageGraphicsPreset,
+	UpscalingMethod,
+	UpscalingQuality,
+} from "@/common/types";
 import {
 	AspectRatios,
 	Resolutions,
@@ -182,7 +183,7 @@ const Game = () => {
 			size="md"
 			my="lg"
 		>
-			{data.map((game: GameInfo) => (
+			{data?.map((game: GameInfo) => (
 				<Stack key={game.id}>
 					<Group>
 						<div className="relative">
@@ -513,9 +514,43 @@ const Game = () => {
 			))}
 		</Container>
 	) : status === "pending" ? (
-		<div>Loading...</div>
+		<Container
+			size="md"
+			my="lg"
+		>
+			<Stack gap="5">
+				<Skeleton
+					height={300}
+					width={"100%"}
+					maw={220}
+					radius="sm"
+					mb="md"
+				/>
+				<Skeleton
+					height={8}
+					radius="sm"
+					width="50%"
+				/>
+				<Skeleton
+					height={8}
+					mt={6}
+					radius="sm"
+				/>
+				<Skeleton
+					height={8}
+					mt={6}
+					width="70%"
+					radius="sm"
+				/>
+			</Stack>
+		</Container>
 	) : status === "error" ? (
-		<div>Error: {(error as Error).message}</div>
+		<Container
+			size="md"
+			my="lg"
+		>
+			<Text c="red">Error: {error?.message}</Text>
+		</Container>
 	) : null;
 };
 

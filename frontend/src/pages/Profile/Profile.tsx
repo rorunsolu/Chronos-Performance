@@ -4,6 +4,7 @@ import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import styles from "@/pages/Profile/Profile.module.css";
 import { FileText, Heart, User } from "lucide-react";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
 	Card,
 	Container,
@@ -18,21 +19,31 @@ import {
 import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
 
 const Profile = () => {
-	const { user } = UserAuth();
+	const { accUrlId } = useParams<{ accUrlId: string }>();
+	const {
+		user,
+		allUsers,
+		favorites,
+		fetchUsers,
+		fetchFavorites,
+	} = UserAuth();
 	const { reports, fetchReports } =
 		usePerformanceReportHook();
 
-	const userSpecificReports = reports.filter(
-		(report) => report.userId === user?.uid
+	const specificUser = allUsers.find(
+		(userAccount) => userAccount.accUrlId === accUrlId
 	);
 
-	const userStats = {
-		favoritedGames: 8,
-	};
+	const userSpecificReports =
+		reports.filter(
+			(report) => report.userId === specificUser?.accUid
+		) || [];
 
 	useEffect(() => {
 		const fetchData = async () => {
-			await fetchReports();
+			await (fetchReports(),
+			fetchUsers(),
+			fetchFavorites(specificUser?.accUid || ""));
 		};
 
 		fetchData();
@@ -53,7 +64,11 @@ const Profile = () => {
 						className={styles.avatar}
 					>
 						<Image
-							src={user.photoURL}
+							src={
+								specificUser?.accPhotoURL
+									? specificUser.accPhotoURL
+									: user.photoURL
+							}
 							content="no-referrer"
 							referrerPolicy="no-referrer"
 						/>
@@ -72,13 +87,18 @@ const Profile = () => {
 						size="lg"
 						fw={700}
 					>
-						{user?.displayName || "Display name not found"}
+						{specificUser?.accName
+							? specificUser.accName
+							: user?.displayName ||
+								"Display name not found"}
 					</Text>
 					<Text
 						size="sm"
 						c="dimmed"
 					>
-						{user?.email || "Email not found"}
+						{specificUser?.accEmail
+							? specificUser.accEmail
+							: user?.email || "Email not found"}
 					</Text>
 				</div>
 			</Group>
@@ -116,9 +136,7 @@ const Profile = () => {
 					<Group>
 						<Heart size={24} />
 						<Stack gap="0">
-							<Text fw={700}>
-								{userStats.favoritedGames}
-							</Text>
+							<Text fw={700}>{favorites.length}</Text>
 							<Text
 								size="sm"
 								c="dimmed"
