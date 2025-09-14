@@ -3,32 +3,39 @@ import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import styles from "@/pages/Game/Game.module.css";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Timestamp } from "firebase/firestore";
-import { Ban, Check } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-	Accordion,
 	Badge,
 	Button,
+	Collapse,
 	Container,
 	Fieldset,
 	Group,
 	Image,
 	NumberInput,
+	Paper,
 	Select,
-	SimpleGrid,
+	Skeleton,
+	Slider,
 	Stack,
 	Switch,
-	Skeleton,
 	Text,
 	Title,
 } from "@mantine/core";
+import {
+	Ban,
+	Calendar1,
+	Check,
+	Wrench,
+} from "lucide-react";
 import StarRating from "@/components/Star Rating/StarRating";
 import type { GameInfo } from "@/hooks/useGameDetails";
-import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
+import type { PerformanceReport } from "@/common/types";
 import type {
 	GPUOptions,
 	VRAMOptions,
@@ -55,11 +62,12 @@ import {
 	CPUs,
 	UpscalingQualitys,
 } from "../../common";
+
 const Game = () => {
 	const { id } = useParams<{ id: string }>();
 	const { createReport, reports, fetchReports } =
 		usePerformanceReportHook();
-
+	const [opened, { toggle }] = useDisclosure(false);
 	const gameSpecificReports = reports.filter(
 		(report) => report.IgdbGameId === id
 	);
@@ -69,6 +77,7 @@ const Game = () => {
 	const form = useForm({
 		mode: "uncontrolled",
 		initialValues: {
+			perfRating: undefined as number | undefined,
 			metrics: {
 				averageFps: undefined as number | undefined,
 				minFps: undefined as number | undefined,
@@ -122,12 +131,14 @@ const Game = () => {
 		values: typeof form.values
 	) => {
 		try {
-			const report: PerformanceReport = {
+			const report: Omit<PerformanceReport, "id"> = {
 				IgdbGameId: id ? id : "",
 				IgdbGameName: data ? data[0]?.name : "",
 				reportId: uuidv4(),
 				userId: "",
 				createdAt: new Date() as unknown as Timestamp,
+
+				perfRating: Number(values.perfRating),
 
 				metrics: {
 					averageFps: Number(values.metrics.averageFps),
@@ -179,167 +190,142 @@ const Game = () => {
 	}, []);
 
 	return status === "success" ? (
-		<Container
-			size="md"
-			my="lg"
-		>
-			{data?.map((game: GameInfo) => (
-				<Stack key={game.id}>
-					<Group>
-						<div className="relative">
-							<Image
-								src={
-									game.cover
-										? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
-										: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-								}
-								alt={`The game cover for ${game.name}`}
-								className={styles.cover}
-								bdrs="sm"
-							/>
-							<StarRating rating={game.rating} />
-						</div>
+		<>
+			<Container
+				size="md"
+				my="lg"
+			>
+				{data?.map((game: GameInfo) => (
+					<Stack key={game.id}>
+						<Group>
+							<div className="relative w-full sm:mb-8">
+								<img
+									src={
+										game.cover
+											? `https://images.igdb.com/igdb/image/upload/t_screenshot_huge/${game.cover.image_id}.jpg`
+											: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+									}
+									alt={`The game cover for ${game.name}`}
+									className="hidden absolute top-[-20px] left-0 min-w-[100%] max-h-[300px] object-cover z-0 sm:block w-screen"
+								/>
+								<div className="relative max-w-fit sm:top-6 sm:left-6 ">
+									<Image
+										src={
+											game.cover
+												? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
+												: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+										}
+										alt={`The game cover for ${game.name}`}
+										className="relative z-10 max-w-fit"
+									/>
+									<StarRating rating={game.rating} />
+								</div>
+							</div>
 
-						<Stack gap="xs">
-							<Text
-								fw={600}
-								size="xl"
-							>
-								{game.name || "Game title not found"}
-							</Text>
-
-							{game.genres?.length && (
-								<Group
-									gap="xs"
-									mb="sm"
-								>
-									{game.genres.map((g) => (
-										<Badge
-											variant="default"
-											radius="sm"
-											key={g.name}
-										>
-											{g.name}
-										</Badge>
-									))}
-								</Group>
-							)}
-							{game.summary && (
+							<Stack gap="xs">
 								<Text
-									size="sm"
-									className={styles.summary}
+									fw={600}
+									size="xl"
 								>
-									{game.summary}
+									{game.name || "Game title not found"}
 								</Text>
-							)}
-						</Stack>
-					</Group>
-					<Stack gap="5">
-						{game.release_dates?.length && (
-							<Text size="sm">
-								Release Date: {game.release_dates[0].y}
-							</Text>
-						)}
-						{game.game_engines?.length && (
-							<Group gap="xs">
-								{game.game_engines.map((engine) => (
+
+								{game.genres?.length && (
+									<Group
+										gap="xs"
+										mb="sm"
+									>
+										{game.game_engines?.length && (
+											<Group gap="xs">
+												{game.game_engines.map((engine) => (
+													<Badge
+														key={engine.name}
+														leftSection={
+															<Wrench size={14} />
+														}
+														className={styles.badge}
+													>
+														<div className="ml-1">
+															{engine.name}
+														</div>
+													</Badge>
+												))}
+											</Group>
+										)}
+										{game.release_dates?.length && (
+											<Badge
+												className={styles.badge}
+												leftSection={
+													<Calendar1 size={14} />
+												}
+											>
+												<div className="ml-1">
+													{game.release_dates[0].y}
+												</div>
+											</Badge>
+										)}
+										{game.genres?.length && (
+											<Group gap="xs">
+												{game.genres.map((g) => (
+													<Badge
+														key={g.name}
+														className={styles.badge}
+													>
+														{g.name}
+													</Badge>
+												))}
+											</Group>
+										)}
+									</Group>
+								)}
+								{game.summary && (
 									<Text
 										size="sm"
-										key={engine.name}
+										className={styles.summary}
 									>
-										Game Engine: {""}
-										{engine.name}
+										{game.summary}
 									</Text>
-								))}
-							</Group>
-						)}
-					</Stack>
+								)}
+							</Stack>
+						</Group>
 
-					<Accordion
-						transitionDuration={0}
-						className={styles.accordion}
-					>
-						<Accordion.Item
-							value="submitreport"
-							className={styles.item}
+						<Button
+							mt="5"
+							size="md"
+							variant="default"
+							onClick={toggle}
+							maw="fit-content"
 						>
-							<Accordion.Control className={styles.control}>
-								<Button
-									variant="outline"
-									color="teal"
-									mt="5"
-									mb="sm"
-								>
-									Start a report
-								</Button>
-							</Accordion.Control>
-							<Accordion.Panel>
+							Start a report
+						</Button>
+
+						<Collapse in={opened}>
+							<Paper>
 								<form
 									onSubmit={form.onSubmit(() => {
 										handleSubmit(form.values);
 									})}
 								>
-									<Stack
-										gap="lg"
-										mt="lg"
-									>
+									<Stack gap="lg">
 										<Switch
 											{...form.getInputProps(
 												"settings.upscaling",
 												{ type: "checkbox" }
 											)}
 											label="Upscaling Enabled?"
+											defaultChecked={false}
 										/>
 										<Fieldset
-											legend="Performance Metrics"
-											variant="unstyled"
-										>
-											<Stack mt="0">
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.averageFps"
-													)}
-													placeholder="Average FPS"
-													label="Average FPS"
-													withAsterisk
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.minFps"
-													)}
-													placeholder="Minimum FPS"
-													label="Minimum FPS"
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.maxFps"
-													)}
-													placeholder="Maximum FPS"
-													label="Maximum FPS"
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-											</Stack>
-										</Fieldset>
-
-										<Fieldset
 											disabled={
+												!form.values.settings.upscaling
+											}
+											hidden={
 												!form.values.settings.upscaling
 											}
 											legend="Upscaling"
 											variant="unstyled"
 										>
-											<Stack mt="0">
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"settings.upscalingMethod"
@@ -362,6 +348,57 @@ const Game = () => {
 													checkIconPosition="right"
 													withAsterisk
 												/>
+											</Stack>
+										</Fieldset>
+										<Fieldset
+											legend="Performance Metrics"
+											variant="unstyled"
+										>
+											<Stack>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.averageFps"
+													)}
+													placeholder="Average FPS"
+													label="Average FPS"
+													withAsterisk
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.minFps"
+													)}
+													placeholder="Minimum FPS"
+													label="Minimum FPS"
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.maxFps"
+													)}
+													placeholder="Maximum FPS"
+													label="Maximum FPS"
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+											</Stack>
+										</Fieldset>
+										<Fieldset
+											legend="Settings"
+											variant="unstyled"
+										>
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"settings.aspectRatio"
@@ -397,12 +434,11 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
-
 										<Fieldset
 											legend="Hardware"
 											variant="unstyled"
 										>
-											<Stack mt="0">
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"hardware.cpu"
@@ -473,6 +509,22 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
+										<Fieldset
+											legend="Overall Performance Rating"
+											variant="unstyled"
+											mb="md"
+										>
+											<Slider
+												{...form.getInputProps(
+													"perfRating"
+												)}
+												color="teal"
+												defaultValue={0}
+												thumbSize={20}
+												mt="sm"
+												maw={300}
+											/>
+										</Fieldset>
 									</Stack>
 
 									<Button
@@ -483,36 +535,40 @@ const Game = () => {
 										Submit
 									</Button>
 								</form>
-							</Accordion.Panel>
-						</Accordion.Item>
-					</Accordion>
+							</Paper>
+						</Collapse>
 
-					<Stack>
-						<Title
-							order={4}
-							fw={500}
-						>
-							Performance Reports
-						</Title>
+						<Stack mt="md">
+							<Title
+								order={4}
+								fw={500}
+								size="xl"
+								mb="md"
+							>
+								Performance Reports
+							</Title>
 
-						{gameSpecificReports.length === 0 ? (
-							<Text>No reports yet. Be the first!</Text>
-						) : (
-							<SimpleGrid>
-								{gameSpecificReports.map(
-									(report: PerformanceReport) => (
-										<ReportCard
-											key={report.reportId}
-											report={report}
-										/>
-									)
-								)}
-							</SimpleGrid>
-						)}
+							{gameSpecificReports.length === 0 ? (
+								<Text mt="-8">
+									No reports yet. Be the first!
+								</Text>
+							) : (
+								<div className={styles.grid}>
+									{gameSpecificReports.map(
+										(report: PerformanceReport) => (
+											<ReportCard
+												key={report.id}
+												report={report}
+											/>
+										)
+									)}
+								</div>
+							)}
+						</Stack>
 					</Stack>
-				</Stack>
-			))}
-		</Container>
+				))}
+			</Container>
+		</>
 	) : status === "pending" ? (
 		<Container
 			size="md"
@@ -523,24 +579,24 @@ const Game = () => {
 					height={300}
 					width={"100%"}
 					maw={220}
-					radius="sm"
+					radius="md"
 					mb="md"
 				/>
 				<Skeleton
-					height={8}
-					radius="sm"
+					height={20}
+					radius="md"
 					width="50%"
 				/>
 				<Skeleton
-					height={8}
+					height={20}
 					mt={6}
-					radius="sm"
+					radius="md"
 				/>
 				<Skeleton
-					height={8}
+					height={20}
 					mt={6}
 					width="70%"
-					radius="sm"
+					radius="md"
 				/>
 			</Stack>
 		</Container>

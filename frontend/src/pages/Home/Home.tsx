@@ -42,7 +42,7 @@ const Home = () => {
 		}
 
 		try {
-			await addFavorite(gameId);
+			await addFavorite(gameId, user.uid);
 		} catch (error) {
 			handleFavFailNotif();
 			return;
@@ -125,7 +125,7 @@ const Home = () => {
 			size="lg"
 			my="lg"
 		>
-			<Text c="red">Error: {error.message}</Text>
+			<Text c="red">{error.message}</Text>
 		</Container>
 	) : (
 		<Container
@@ -137,13 +137,14 @@ const Home = () => {
 
 				<TextInput
 					radius="md"
-					size="md"
+					size="sm"
 					leftSection={<Search size={18} />}
 					placeholder="Search games"
 					readOnly
 					onClick={() => {
 						spotlight.open();
 					}}
+					color="gray"
 				/>
 
 				{data.pages.map((results, i) => (

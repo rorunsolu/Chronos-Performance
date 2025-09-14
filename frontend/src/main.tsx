@@ -6,10 +6,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import {
-	ColorSchemeScript,
-	MantineProvider,
+	Badge,
 	Button,
+	ColorSchemeScript,
 	createTheme,
+	MantineProvider,
+	Paper,
 } from "@mantine/core";
 import {
 	QueryClient,
@@ -28,8 +30,23 @@ const theme = createTheme({
 	components: {
 		Button: Button.extend({
 			defaultProps: {
-				color: "teal",
-				variant: "light",
+				variant: "default",
+				bdrs: "md",
+			},
+		}),
+		Badge: Badge.extend({
+			defaultProps: {
+				variant: "default",
+				bdrs: "md",
+				size: "lg",
+			},
+		}),
+		Paper: Paper.extend({
+			defaultProps: {
+				withBorder: true,
+				shadow: "xs",
+				bdrs: "md",
+				p: "md",
 			},
 		}),
 	},

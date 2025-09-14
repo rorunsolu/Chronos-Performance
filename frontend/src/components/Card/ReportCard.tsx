@@ -1,20 +1,28 @@
 import { UserAuth } from "@/auth/AuthContext";
 import cardStyles from "@/components/Card/ReportCard.module.css";
 import { useGameDetails } from "@/hooks/useGameDetails";
+import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import dayjs from "dayjs";
-import { User } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+	EllipsisVertical,
+	Trash,
+	User,
+} from "lucide-react";
+import {
 	Accordion,
+	Button,
 	Divider,
 	Group,
+	Image,
+	Menu,
 	Paper,
 	Stack,
 	Text,
-	Image,
+	Title,
 } from "@mantine/core";
-import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
+import type { PerformanceReport } from "@/common/types";
 
 const ReportCard = ({
 	report,
@@ -29,11 +37,16 @@ const ReportCard = ({
 	);
 
 	const navigate = useNavigate();
-	const { allUsers, fetchUsers } = UserAuth();
+	const { allUsers, fetchUsers, user } = UserAuth();
+	const { deleteReport } = usePerformanceReportHook();
+
+	const reportOwner = allUsers.find(
+		(account) => account.userId === report.userId
+	);
 
 	const authorAvatar =
 		allUsers.find(
-			(userAcc) => report.userId === userAcc.accUid
+			(userAcc) => report.userId === userAcc.userId
 		)?.accPhotoURL || null;
 
 	useEffect(() => {
@@ -45,17 +58,13 @@ const ReportCard = ({
 	}, []);
 
 	return (
-		<Paper
-			withBorder
-			radius="md"
-			className={cardStyles.comment}
-		>
+		<Paper className={cardStyles.comment}>
 			<Group
 				onClick={() => {
 					{
 						!isProfilePage &&
 							navigate(
-								`/profile/${allUsers.find((userAcc) => userAcc.accUid === report.userId)?.accUrlId}`
+								`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
 							);
 					}
 				}}
@@ -65,11 +74,11 @@ const ReportCard = ({
 			>
 				{!isProfilePage && (
 					<Paper
-						withBorder
 						radius={100}
 						className="overflow-hidden"
-						w={40}
-						h={40}
+						w={35}
+						h={35}
+						p={0}
 					>
 						{authorAvatar ? (
 							<Image
@@ -89,45 +98,81 @@ const ReportCard = ({
 					</Paper>
 				)}
 
-				<div>
+				<Group w="100%">
 					{isProfilePage ? (
-						<Group justify="flex-start">
-							<img
-								src={
-									gameDetails && gameDetails[0]?.cover
-										? `https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`
-										: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-								}
-								alt={`Image of ${gameDetails && gameDetails[0]?.name}`}
-								width={40}
-								height={50}
-								style={{ borderRadius: 8 }}
-							/>
-							<Stack gap="0">
-								<Text
-									fz="md"
-									fw={500}
+						<div className="w-full flex justify-between items-center">
+							<Group>
+								<img
+									src={
+										gameDetails && gameDetails[0]?.cover
+											? `https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`
+											: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+									}
+									alt={`Image of ${gameDetails && gameDetails[0]?.name}`}
+									width={40}
+									height={50}
+									style={{ borderRadius: 5 }}
+								/>
+								<Stack gap="0">
+									<Text
+										fz="md"
+										fw={500}
+									>
+										{report.IgdbGameName}
+									</Text>
+									<Text
+										fz="xs"
+										c="dimmed"
+									>
+										Posted:{" "}
+										{dayjs(
+											report.createdAt.toDate()
+										).format("MMMM D, YYYY")}
+									</Text>
+								</Stack>
+							</Group>
+
+							{reportOwner?.userId === user?.uid && (
+								<Menu
+									shadow="md"
+									width={200}
 								>
-									{report.IgdbGameName}
-								</Text>
-								<Text
-									fz="xs"
-									c="dimmed"
-								>
-									Posted:{" "}
-									{dayjs(report.createdAt.toDate()).format(
-										"MMMM D, YYYY"
-									)}
-								</Text>
-							</Stack>
-						</Group>
+									<Menu.Target>
+										<Button
+											variant="default"
+											p="5"
+										>
+											<EllipsisVertical size={16} />
+										</Button>
+									</Menu.Target>
+
+									<Menu.Dropdown>
+										<Menu.Item
+											fw={500}
+											color="red"
+											leftSection={
+												<Trash
+													size={14}
+													strokeWidth={3}
+												/>
+											}
+											onClick={() => {
+												deleteReport(report.id);
+											}}
+										>
+											Delete Report
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+							)}
+						</div>
 					) : (
 						<>
 							<Text fz="sm">
 								{
 									allUsers.find(
 										(userAcc) =>
-											userAcc.accUid === report.userId
+											userAcc.userId === report.userId
 									)?.accName
 								}
 							</Text>
@@ -141,45 +186,60 @@ const ReportCard = ({
 							</Text>
 						</>
 					)}
-				</div>
+				</Group>
 			</Group>
 			<Stack gap="1">
-				<Stack
+				<Group
 					gap="5"
-					mt="md"
+					mt="lg"
+					justify="space-between"
 				>
 					{report.metrics.averageFps && (
-						<Group gap="5">
-							<Text fz="sm">Average FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.averageFps}FPS
-							</Text>
-						</Group>
-					)}
-					{report.metrics.minFps && (
-						<Group gap="5">
-							<Text fz="sm">1% Lows:</Text>
+						<Stack gap="5">
+							<Title fz="xl">
+								{report.metrics.averageFps}
+							</Title>
 							<Text
-								fz="sm"
-								c="white"
+								fz="xs"
+								fw={600}
 							>
-								{report.metrics.minFps}FPS
+								AVG FPS
 							</Text>
-						</Group>
+						</Stack>
 					)}
+					<Divider
+						size="sm"
+						orientation="vertical"
+					/>
+					{report.metrics.minFps && (
+						<Stack gap="5">
+							<Title fz="xl">{report.metrics.minFps}</Title>
+							<Text
+								fz="xs"
+								fw={600}
+							>
+								MIN FPS
+							</Text>
+						</Stack>
+					)}
+					<Divider
+						size="sm"
+						orientation="vertical"
+					/>
 					{report.metrics.maxFps && (
-						<Group gap="5">
-							<Text fz="sm">Max FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.maxFps}FPS
+						<Stack gap="5">
+							<Title fz="xl">{report.metrics.maxFps}</Title>
+							<Text
+								fz="xs"
+								fw={600}
+							>
+								MAX FPS
 							</Text>
-						</Group>
+						</Stack>
 					)}
-				</Stack>
+				</Group>
 
 				<Accordion
-					transitionDuration={0}
-					chevronPosition="left"
 					onClick={(e) => {
 						e.stopPropagation();
 					}}
@@ -192,11 +252,7 @@ const ReportCard = ({
 							mt="lg"
 							bdrs="sm"
 							className={cardStyles.control}
-						>
-							<Group justify="flex-start">
-								<Text size="sm">Expand</Text>
-							</Group>
-						</Accordion.Control>
+						></Accordion.Control>
 						<Accordion.Panel>
 							<Stack
 								gap="5"

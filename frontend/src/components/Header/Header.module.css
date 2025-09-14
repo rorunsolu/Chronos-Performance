@@ -1,15 +1,6 @@
 .header {
 	height: 56px;
-	background-color: var(--mantine-color-body);
-	background-color: light-dark(
-		var(--mantine-color-gray-0),
-		var(--mantine-color-dark-6)
-	);
-	border-bottom: 1px solid
-		light-dark(
-			var(--mantine-color-gray-3),
-			var(--mantine-color-dark-4)
-		);
+
 	padding-left: var(--mantine-spacing-md);
 	padding-right: var(--mantine-spacing-md);
 }
@@ -50,30 +41,6 @@
 }
 
 .user {
-	color: light-dark(
-		var(--mantine-color-black),
-		var(--mantine-color-dark-0)
-	);
-	padding: var(--mantine-spacing-xs)
-		var(--mantine-spacing-sm) !important;
-	border-radius: var(--mantine-radius-sm);
-	border-color: light-dark(
-		var(--mantine-color-gray-3),
-		var(--mantine-color-dark-4)
-	) !important;
-
-	transition: background-color 100ms ease;
-
-	&:hover {
-		background-color: light-dark(
-			var(--mantine-color-white),
-			var(--mantine-color-dark-8)
-		);
-		background-color: var(
-			--mantine-color-default-hover
-		) !important;
-	}
-
 	@media (max-width: $mantine-breakpoint-xs) {
 		display: none;
 	}
@@ -89,6 +56,8 @@
 .colorSchemeToggle {
 	width: 36px !important;
 	height: 36px !important;
+
+	display: none !important;
 }
 
 .icon {

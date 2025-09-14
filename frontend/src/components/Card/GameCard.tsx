@@ -1,5 +1,5 @@
+import { UserAuth } from "@/auth/AuthContext";
 import styles from "@/components/Card/GameCard.module.css";
-import { isGameFavorited } from "@/hooks/useFavorites";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import StarRating from "@/components/Star Rating/StarRating";
@@ -32,16 +32,16 @@ const GameCard = ({
 	handleFavourite: (gameId: number) => Promise<void>;
 }) => {
 	const navigate = useNavigate();
+	const { favorites } = UserAuth();
+	const isFavorited =
+		favorites.filter((fav) => fav === game.id).length > 0;
 
 	return (
 		<Card
-			shadow="sm"
-			padding="xs"
-			radius="md"
-			withBorder
 			key={game.id}
 			onClick={() => navigate(`/game/${game.id}`)}
-			className={styles.card}
+			className="relative cursor-pointer"
+			p={0}
 		>
 			<Card.Section className="relative">
 				<Image
@@ -67,7 +67,7 @@ const GameCard = ({
 					autoContrast
 				>
 					<Heart
-						fill={isGameFavorited(game.id) ? "red" : "none"}
+						fill={isFavorited ? "red" : "none"}
 						stroke="white"
 						size={20}
 					/>
@@ -76,7 +76,7 @@ const GameCard = ({
 			</Card.Section>
 			<Group
 				justify="space-between"
-				mt="sm"
+				p="sm"
 			>
 				<Text
 					fw={500}

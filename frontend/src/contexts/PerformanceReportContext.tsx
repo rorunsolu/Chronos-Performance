@@ -10,63 +10,12 @@ import {
 	deleteDoc,
 	doc,
 	getDocs,
+	updateDoc,
+	arrayUnion,
+	arrayRemove,
 } from "firebase/firestore";
 
-import type {
-	GPUOptions,
-	VRAMOptions,
-	RAMOptions,
-	CPUOptions,
-	StorageType,
-	HardwareType,
-	AspectRatio,
-	Resolution,
-	AverageGraphicsPreset,
-	UpscalingMethod,
-	UpscalingQuality,
-} from "@/common/types";
-
-export type PerformanceReport = {
-	IgdbGameId: string; // derived from the IGDB API
-	IgdbGameName: string; // derived from the IGDB API
-	reportId: string;
-	userId: string;
-	createdAt: Timestamp;
-
-	metrics: {
-		averageFps: number;
-		minFps?: number;
-		maxFps?: number;
-	};
-
-	settings: {
-		upscaling: boolean; // for easy filtering
-		upscalingMethod?: UpscalingMethod;
-		UpscalingQuality?: UpscalingQuality;
-
-		aspectRatio: AspectRatio;
-		resolution: Resolution;
-		averageGraphicsPreset: AverageGraphicsPreset;
-	};
-
-	hardware: {
-		cpu: CPUOptions;
-		gpu: GPUOptions;
-		ram: RAMOptions;
-		vram: VRAMOptions;
-		storageType: StorageType;
-		hardwareType: HardwareType;
-	};
-};
-
-export type PerformanceReportContextType = {
-	reports: PerformanceReport[];
-	fetchReports: () => Promise<void>;
-	deleteReport: (reportId: string) => Promise<void>;
-	createReport: (
-		report: PerformanceReport
-	) => Promise<string>;
-};
+import type { PerformanceReport } from "@/common/types";
 
 export const PerformanceReportProvider = ({
 	children,
@@ -83,6 +32,7 @@ export const PerformanceReportProvider = ({
 			reportsCollection
 		);
 		const reportsData = reportsSnapshot.docs.map((doc) => ({
+			id: doc.id,
 			...doc.data(),
 		})) as PerformanceReport[];
 
@@ -92,10 +42,11 @@ export const PerformanceReportProvider = ({
 					b.createdAt.toMillis() - a.createdAt.toMillis()
 			)
 		);
+		console.log("Reports fetched");
 	};
 
 	const createReport = async (
-		report: PerformanceReport
+		report: Omit<PerformanceReport, "id">
 	) => {
 		const user = await getAuthenticatedUser();
 
@@ -111,28 +62,37 @@ export const PerformanceReportProvider = ({
 				data
 			);
 
+			const userRef = doc(db, "users", user.uid);
+			await updateDoc(userRef, {
+				reports: arrayUnion(docRef.id),
+			});
+
 			setReports((prev) => [
 				...prev,
 				{
+					id: docRef.id,
 					...data,
 				},
 			]);
+			console.log("Report created:", docRef.id);
 			return docRef.id;
 		} catch (error) {
 			throw new Error(`Error creating report: ${error}`);
 		}
 	};
 
-	const deleteReport = async (reportId: string) => {
+	const deleteReport = async (id: string) => {
 		try {
-			const reportDoc = doc(db, "reports", reportId);
-
-			await deleteDoc(reportDoc);
+			const user = await getAuthenticatedUser();
+			await deleteDoc(doc(db, "reports", id));
+			const userRef = doc(db, "users", user.uid);
+			await updateDoc(userRef, {
+				reports: arrayRemove(id),
+			});
 			setReports((prev) =>
-				prev.filter(
-					(report) => report.reportId !== reportId
-				)
+				prev.filter((report) => report.id !== id)
 			);
+			console.log("Report deleted:", id);
 		} catch (error) {
 			throw new Error(`Error deleting report: ${error}`);
 		}
@@ -150,4 +110,13 @@ export const PerformanceReportProvider = ({
 			{children}
 		</PerformanceReportContext.Provider>
 	);
+};
+
+export type PerformanceReportContextType = {
+	reports: PerformanceReport[];
+	fetchReports: () => Promise<void>;
+	deleteReport: (id: string) => Promise<void>;
+	createReport: (
+		report: Omit<PerformanceReport, "id">
+	) => Promise<string>;
 };

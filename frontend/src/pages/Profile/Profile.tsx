@@ -1,9 +1,8 @@
 import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
-import styles from "@/pages/Profile/Profile.module.css";
 import { FileText, Heart, User } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
 	Card,
@@ -16,38 +15,58 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import type { PerformanceReport } from "@/contexts/PerformanceReportContext";
+import type { PerformanceReport } from "@/common/types";
 
 const Profile = () => {
 	const { accUrlId } = useParams<{ accUrlId: string }>();
-	const {
-		user,
-		allUsers,
-		favorites,
-		fetchUsers,
-		fetchFavorites,
-	} = UserAuth();
+	const { user, allUsers, getUserFavorites } = UserAuth();
 	const { reports, fetchReports } =
 		usePerformanceReportHook();
+
+	const [profileFavorites, setProfileFavorites] = useState<
+		number[]
+	>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const specificUser = allUsers.find(
 		(userAccount) => userAccount.accUrlId === accUrlId
 	);
 
-	const userSpecificReports =
-		reports.filter(
-			(report) => report.userId === specificUser?.accUid
-		) || [];
+	const userSpecificReports = specificUser
+		? reports.filter(
+				(report) => report.userId === specificUser.userId
+			)
+		: [];
 
 	useEffect(() => {
 		const fetchData = async () => {
-			await (fetchReports(),
-			fetchUsers(),
-			fetchFavorites(specificUser?.accUid || ""));
+			setIsLoading(true);
+			try {
+				await fetchReports();
+				if (specificUser) {
+					const favs = await getUserFavorites(
+						specificUser.userId
+					);
+					setProfileFavorites(favs);
+				}
+			} catch (error) {
+				throw new Error(
+					"Failed to fetch user data. Please try again."
+				);
+			} finally {
+				setIsLoading(false);
+			}
 		};
 
 		fetchData();
-	}, []);
+	}, [
+		accUrlId,
+		specificUser?.userId,
+		fetchReports,
+		getUserFavorites,
+	]);
+
+	//! FIX DEPENDACNIES FOR THE USER EFFECT???
 
 	return (
 		<Container
@@ -60,8 +79,11 @@ const Profile = () => {
 			>
 				{user?.photoURL ? (
 					<Paper
-						withBorder
-						className={styles.avatar}
+						radius={100}
+						className="overflow-hidden"
+						w={40}
+						h={40}
+						p={0}
 					>
 						<Image
 							src={
@@ -75,8 +97,11 @@ const Profile = () => {
 					</Paper>
 				) : (
 					<Paper
-						radius="xl"
-						withBorder
+						radius={100}
+						className="overflow-hidden"
+						w={35}
+						h={35}
+						p={0}
 					>
 						<User />
 					</Paper>
@@ -109,7 +134,6 @@ const Profile = () => {
 				mb="lg"
 			>
 				<Card
-					shadow="sm"
 					padding="md"
 					withBorder
 				>
@@ -123,20 +147,21 @@ const Profile = () => {
 								size="sm"
 								c="dimmed"
 							>
-								Reports Posted
+								Performance Reports
 							</Text>
 						</Stack>
 					</Group>
 				</Card>
 				<Card
-					shadow="sm"
 					padding="md"
 					withBorder
 				>
 					<Group>
 						<Heart size={24} />
 						<Stack gap="0">
-							<Text fw={700}>{favorites.length}</Text>
+							<Text fw={700}>
+								{profileFavorites.length}
+							</Text>
 							<Text
 								size="sm"
 								c="dimmed"

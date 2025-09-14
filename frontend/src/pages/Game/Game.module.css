@@ -1,28 +1,14 @@
-.cover {
-	max-width: 268px;
-	max-height: 357px;
-
-	width: 100%;
-	object-fit: cover;
-}
 .summary {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
 	overflow: hidden;
 }
-.item {
-	border-bottom: none !important;
-}
 
-.control {
-	background: none !important;
-	display: block !important;
-	padding: 0 !important;
+.grid {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
 
-	width: fit-content !important;
-
-	svg {
-		display: none !important;
-	}
+	width: 100%;
 }

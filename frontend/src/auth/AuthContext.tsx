@@ -6,12 +6,12 @@ import {
 	getDoc,
 	setDoc,
 	arrayUnion,
-	arrayRemove,
 	updateDoc,
 	collection,
 	getDocs,
 	serverTimestamp,
 	Timestamp,
+	arrayRemove,
 } from "firebase/firestore";
 import {
 	createContext,
@@ -37,7 +37,7 @@ const AuthContext = createContext<
 >(undefined);
 
 export type userAccount = {
-	accUid: string;
+	userId: string;
 	accUrlId: string;
 	accEmail: string | null;
 	accCreationDate: Timestamp;
@@ -59,26 +59,36 @@ export const AuthContextProvider: React.FC<
 		[]
 	);
 
-	const addFavorite = async (gameId: number) => {
+	const addFavorite = async (
+		gameId: number,
+		userId: string
+	) => {
 		if (!user) {
-			return;
+			throw new Error("User (auth) doesn't exist");
 		}
-		const userRef = doc(db, "users", user.uid);
-		const userDoc = await getDoc(userRef);
-		const currentFavorites =
-			userDoc.data()?.favorites || [];
-		if (!currentFavorites.includes(gameId)) {
-			await updateDoc(userRef, {
-				favorites: arrayUnion(gameId),
-			});
-			setFavorites((prev) => [...prev, gameId]);
-		} else {
-			await updateDoc(userRef, {
-				favorites: arrayRemove(gameId),
-			});
-			setFavorites((prev) =>
-				prev.filter((id) => id !== gameId)
-			);
+
+		try {
+			const userRef = doc(db, "users", userId);
+			const userDoc = await getDoc(userRef);
+			const currentFavorites =
+				userDoc.data()?.favorites || [];
+			if (!currentFavorites.includes(gameId)) {
+				await updateDoc(userRef, {
+					favorites: arrayUnion(gameId),
+				});
+				setFavorites((prev) => [...prev, gameId]);
+			} else {
+				if (currentFavorites.includes(gameId)) {
+					await updateDoc(userRef, {
+						favorites: arrayRemove(gameId),
+					});
+					setFavorites((prev) =>
+						prev.filter((fav) => fav !== gameId)
+					);
+				}
+			}
+		} catch (error) {
+			throw new Error("Failed to add favorite");
 		}
 	};
 
@@ -113,25 +123,22 @@ export const AuthContextProvider: React.FC<
 				handleUserAccount(user!);
 			}
 		} catch (error) {
-			throw new Error("Failed to fetch favorites");
+			throw new Error(
+				`Failed to fetch favorites for user ${userId}: ${String(error)}`
+			);
 		}
 	};
 
-	const addReport = async (reportId: string) => {
-		if (!user) return;
-		const userRef = doc(db, "users", user.uid);
-		await updateDoc(userRef, {
-			reports: arrayUnion(reportId),
-		});
-	};
-
 	const handleUserAccount = async (user: User) => {
+		if (!user) {
+			throw new Error("User (auth) doesn't exist");
+		}
 		const userRef = doc(db, "users", user.uid);
 		const userDoc = await getDoc(userRef);
 
 		if (!userDoc.exists()) {
 			await setDoc(userRef, {
-				accUid: user.uid,
+				userId: user.uid,
 				accUrlId: uuidv4(),
 				accEmail: user.email,
 				accCreationDate: serverTimestamp(),
@@ -142,6 +149,22 @@ export const AuthContextProvider: React.FC<
 			});
 		} else {
 			await fetchFavorites(user.uid);
+		}
+	};
+
+	const getUserFavorites = async (
+		userId: string
+	): Promise<number[]> => {
+		try {
+			const userRef = doc(db, "users", userId);
+			const userDoc = await getDoc(userRef);
+			return userDoc.exists()
+				? userDoc.data()?.favorites || []
+				: [];
+		} catch (error) {
+			throw new Error(
+				`Failed to get favorites for user ${userId}: ${String(error)}`
+			);
 		}
 	};
 
@@ -208,7 +231,6 @@ export const AuthContextProvider: React.FC<
 					await fetchFavorites(currentUser.uid);
 				}
 
-				// eslint-disable-next-line
 				console.log("Current user is:", currentUser);
 			}
 		);
@@ -222,8 +244,8 @@ export const AuthContextProvider: React.FC<
 		<AuthContext.Provider
 			value={{
 				addFavorite,
-				addReport,
 				fetchFavorites,
+				getUserFavorites,
 				googleSignIn,
 				signInAsGuest,
 				emailSignIn,
@@ -253,12 +275,20 @@ export const UserAuth = (): AuthContextType => {
 };
 
 interface AuthContextType {
-	addFavorite: (gameId: number) => Promise<void>;
-	addReport: (reportId: string) => Promise<void>;
+	isGuest: boolean;
+	user: User | null;
+	favorites: number[];
+	allUsers: userAccount[];
+	logOut: () => void;
+	fetchUsers: () => Promise<void>;
 	googleSignIn: () => Promise<UserCredential>;
 	signInAsGuest: () => Promise<UserCredential>;
-	favorites: number[];
 	fetchFavorites: (userId: string) => Promise<void>;
+	getUserFavorites: (userId: string) => Promise<number[]>;
+	addFavorite: (
+		gameId: number,
+		userId: string
+	) => Promise<void>;
 	emailSignIn: (
 		email: string,
 		password: string
@@ -267,11 +297,6 @@ interface AuthContextType {
 		email: string,
 		password: string
 	) => Promise<UserCredential>;
-	logOut: () => void;
-	user: User | null;
-	isGuest: boolean;
-	allUsers: userAccount[];
-	fetchUsers: () => Promise<void>;
 }
 
 interface AuthContextProviderProps {

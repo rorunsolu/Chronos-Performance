@@ -1,12 +1,8 @@
 .favourite {
 	position: absolute !important;
-	top: var(--mantine-spacing-xs);
-	right: 12px;
+	top: 20px;
+	right: 20px;
 	border-radius: 100%;
 	width: 40px !important;
 	height: 40px !important;
-}
-
-.card {
-	position: relative !important;
 }

@@ -197,11 +197,13 @@ export type StorageType = "HDD" | "SSD";
 export type HardwareType = "Laptop" | "Desktop";
 
 export type PerformanceReport = {
-	IgdbGameId: string; // derived from the IGDB API
-	IgdbGameName: string; // derived from the IGDB API
-	reportId: string;
+	id: string; // Firestore document ID
 	userId: string;
+	reportId: string;
 	createdAt: Timestamp;
+	IgdbGameId: string;
+	perfRating: number;
+	IgdbGameName: string;
 
 	metrics: {
 		averageFps: number;
@@ -210,12 +212,12 @@ export type PerformanceReport = {
 	};
 
 	settings: {
-		upscaling: boolean; // for easy filtering
+		upscaling: boolean;
 		upscalingMethod?: UpscalingMethod;
 		UpscalingQuality?: UpscalingQuality;
 
-		aspectRatio: AspectRatio;
 		resolution: Resolution;
+		aspectRatio: AspectRatio;
 		averageGraphicsPreset: AverageGraphicsPreset;
 	};
 

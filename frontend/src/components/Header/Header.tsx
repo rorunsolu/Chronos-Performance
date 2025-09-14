@@ -3,10 +3,9 @@ import ChronosLogo from "@/components/Branding/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
 import { useDisclosure } from "@mantine/hooks";
 import cx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-	ArrowRightLeft,
 	ChevronsUpDown,
 	LogOut,
 	Moon,
@@ -20,14 +19,19 @@ import {
 	Group,
 	Menu,
 	Text,
-	UnstyledButton,
+	NavLink,
 	useMantineColorScheme,
 	useComputedColorScheme,
 	ActionIcon,
 } from "@mantine/core";
 
 const Header = () => {
-	"use no memo";
+	useEffect(() => {
+		const fetchData = async () => {
+			await fetchUsers();
+		};
+		fetchData();
+	}, []);
 
 	const { setColorScheme } = useMantineColorScheme();
 	const computedColorScheme = useComputedColorScheme(
@@ -43,7 +47,7 @@ const Header = () => {
 		useState(false);
 
 	const navigate = useNavigate();
-	const { user, logOut, allUsers } = UserAuth();
+	const { user, logOut, allUsers, fetchUsers } = UserAuth();
 
 	const handleSignOut = async () => {
 		try {
@@ -55,24 +59,28 @@ const Header = () => {
 		}
 	};
 
-	const profileUrlId = allUsers.find(
-		(account) => account.accUid === user?.uid
+	const profileAccUrlId = allUsers.find(
+		(account) => account.userId === user?.uid
 	)?.accUrlId;
 
 	const items = links.map((link) => (
-		<a
+		<NavLink
 			key={link.label}
 			href={link.link}
-			className={classes.link}
+			label={link.label}
+			color="black"
+			variant="subtle"
+			fw={500}
+			bdrs="md"
+			p="xs"
+			py={5}
 			data-active={active === link.link || undefined}
-			onClick={(event) => {
-				event.preventDefault();
+			active={active === link.link}
+			onClick={() => {
 				setActive(link.link);
 				navigate(link.link);
 			}}
-		>
-			{link.label}
-		</a>
+		/>
 	));
 
 	return (
@@ -133,9 +141,20 @@ const Header = () => {
 								onClose={() => setUserMenuOpened(false)}
 								onOpen={() => setUserMenuOpened(true)}
 								withinPortal
+								offset={2}
+								withArrow
+								shadow="xs"
+								styles={{
+									dropdown: {
+										border:
+											"1px solid var(--mantine-color-gray-3)",
+										borderRadius: "8px",
+									},
+								}}
 							>
 								<Menu.Target>
-									<UnstyledButton
+									<Button
+										px="xs"
 										className={cx(classes.user, {
 											[classes.userActive]: userMenuOpened,
 										})}
@@ -157,28 +176,20 @@ const Header = () => {
 											</Text>
 											<ChevronsUpDown size={12} />
 										</Group>
-									</UnstyledButton>
+									</Button>
 								</Menu.Target>
 								<Menu.Dropdown>
 									<Menu.Item
 										leftSection={<User size={16} />}
 										onClick={async () => {
-											navigate(`/profile/${profileUrlId}`);
+											await navigate(
+												`/profile/${profileAccUrlId}`
+											);
 										}}
 									>
 										My Profile
 									</Menu.Item>
-									<Menu.Item
-										leftSection={
-											<ArrowRightLeft size={16} />
-										}
-										onClick={async () => {
-											await handleSignOut();
-											navigate("/portal");
-										}}
-									>
-										Change account
-									</Menu.Item>
+
 									<Menu.Item
 										leftSection={<LogOut size={16} />}
 										onClick={async () => {
