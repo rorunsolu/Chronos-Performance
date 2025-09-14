@@ -1,10 +1,20 @@
 import { UserAuth } from "@/auth/AuthContext";
 import ChronosLogo from "@/components/Branding/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
-import { useDisclosure } from "@mantine/hooks";
 import cx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+	ActionIcon,
+	Avatar,
+	Button,
+	Group,
+	Menu,
+	NavLink,
+	Text,
+	useComputedColorScheme,
+	useMantineColorScheme,
+} from "@mantine/core";
 import {
 	ChevronsUpDown,
 	LogOut,
@@ -12,18 +22,6 @@ import {
 	Sun,
 	User,
 } from "lucide-react";
-import {
-	Avatar,
-	Burger,
-	Button,
-	Group,
-	Menu,
-	Text,
-	NavLink,
-	useMantineColorScheme,
-	useComputedColorScheme,
-	ActionIcon,
-} from "@mantine/core";
 
 const Header = () => {
 	useEffect(() => {
@@ -42,7 +40,6 @@ const Header = () => {
 	const links = [{ link: "/", label: "Home" }];
 	const [active, setActive] = useState(links[0].link);
 
-	const [opened, { toggle }] = useDisclosure(false);
 	const [userMenuOpened, setUserMenuOpened] =
 		useState(false);
 
@@ -87,24 +84,17 @@ const Header = () => {
 		<header className={classes.header}>
 			<div className={classes.inner}>
 				<Group className="min-w-fit">
-					<Burger
-						opened={opened}
-						onClick={toggle}
-						size="sm"
-						hiddenFrom="sm"
-					/>
 					<ChronosLogo />
 				</Group>
 
 				<Group
 					justify="space-between"
 					w={"100%"}
+					ml="md"
 				>
 					<Group
-						ml={50}
 						gap={5}
 						className={classes.links}
-						visibleFrom="sm"
 					>
 						{items}
 					</Group>
@@ -171,6 +161,7 @@ const Header = () => {
 												size="sm"
 												lh={1}
 												mr={3}
+												visibleFrom="xs"
 											>
 												{user?.displayName}
 											</Text>
@@ -204,16 +195,7 @@ const Header = () => {
 						) : user === null ? (
 							<Group gap={10}>
 								<Button
-									variant="filled"
-									color="teal"
-									className={classes.button}
-									onClick={() => navigate("/portal")}
-								>
-									Sign Up
-								</Button>
-								<Button
-									variant="outline"
-									color="teal"
+									variant="default"
 									onClick={() => navigate("/portal")}
 								>
 									Login

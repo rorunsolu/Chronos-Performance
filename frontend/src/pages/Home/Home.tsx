@@ -89,10 +89,7 @@ const Home = () => {
 	});
 
 	return status === "pending" ? (
-		<Container
-			size="lg"
-			my="lg"
-		>
+		<Container size="lg">
 			<Stack>
 				<TextInput
 					radius="md"
@@ -130,7 +127,8 @@ const Home = () => {
 	) : (
 		<Container
 			size="lg"
-			my="lg"
+			my="sm"
+			px="sm"
 		>
 			<Stack>
 				<SpotlightSearch />

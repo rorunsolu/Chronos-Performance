@@ -1,3 +1,4 @@
+import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
@@ -71,6 +72,7 @@ const Game = () => {
 	const gameSpecificReports = reports.filter(
 		(report) => report.IgdbGameId === id
 	);
+	const { user } = UserAuth();
 
 	const { data, status, error } = useGameDetails(id);
 
@@ -295,6 +297,7 @@ const Game = () => {
 							variant="default"
 							onClick={toggle}
 							maw="fit-content"
+							disabled={!user}
 						>
 							Start a report
 						</Button>
@@ -543,7 +546,7 @@ const Game = () => {
 								order={4}
 								fw={500}
 								size="xl"
-								mb="md"
+								mb="xs"
 							>
 								Performance Reports
 							</Title>

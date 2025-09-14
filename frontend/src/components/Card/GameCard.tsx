@@ -32,7 +32,7 @@ const GameCard = ({
 	handleFavourite: (gameId: number) => Promise<void>;
 }) => {
 	const navigate = useNavigate();
-	const { favorites } = UserAuth();
+	const { favorites, user } = UserAuth();
 	const isFavorited =
 		favorites.filter((fav) => fav === game.id).length > 0;
 
@@ -65,6 +65,7 @@ const GameCard = ({
 						handleFavourite(game.id);
 					}}
 					autoContrast
+					hidden={!user}
 				>
 					<Heart
 						fill={isFavorited ? "red" : "none"}

@@ -1,3 +1,4 @@
+import styles from "./Logo.module.css";
 import { Group, Title } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +20,13 @@ const ChronosLogo = () => {
 				className="h-6 w-6"
 			/>
 
-			<Title order={6}>Chronos</Title>
+			<Title
+				order={6}
+				className={styles.title}
+				visibleFrom="sm"
+			>
+				Chronos
+			</Title>
 		</Group>
 	);
 };

@@ -66,8 +66,6 @@ const Profile = () => {
 		getUserFavorites,
 	]);
 
-	//! FIX DEPENDACNIES FOR THE USER EFFECT???
-
 	return (
 		<Container
 			size="xs"
