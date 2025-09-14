@@ -5,16 +5,8 @@ body {
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
-
-	background: black;
-
-	color: var(--mantine-color-white) !important;
 }
 
 .m_4ba554d4.mantine-Accordion-content {
 	padding: 0;
 }
-
-/* #mantine-k8uxlzjsn-control-instructions {
-	padding: 0;
-} */

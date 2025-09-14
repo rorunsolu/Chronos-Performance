@@ -1,5 +1,8 @@
+import { UserAuth } from "@/auth/AuthContext";
+import GameCard from "@/components/Card/GameCard";
+import { notifications } from "@mantine/notifications";
 import { Spotlight, spotlight } from "@mantine/spotlight";
-import { Search } from "lucide-react";
+import { Ban, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,10 +11,7 @@ import {
 	keepPreviousData,
 } from "@tanstack/react-query";
 import {
-	Card,
 	Container,
-	Group,
-	Image,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -34,7 +34,30 @@ interface HomePageGame {
 }
 
 const Home = () => {
-	const navigate = useNavigate();
+	const { user, addFavorite } = UserAuth();
+
+	const handleFavourite = async (gameId: number) => {
+		if (!user) {
+			return;
+		}
+
+		try {
+			await addFavorite(gameId, user.uid);
+		} catch (error) {
+			handleFavFailNotif();
+			return;
+		}
+	};
+
+	const handleFavFailNotif = () => {
+		notifications.show({
+			title: "Action Failed",
+			message:
+				"Could not update favorites. Please try again.",
+			color: "red",
+			icon: <Ban />,
+		});
+	};
 
 	const fetchHomepageGames = async ({ pageParam = 0 }) => {
 		const res = await fetch(
@@ -62,14 +85,11 @@ const Home = () => {
 				? undefined
 				: allPages.length * fetchLimit;
 		},
-		maxPages: 4,
+		maxPages: 6,
 	});
 
 	return status === "pending" ? (
-		<Container
-			size="lg"
-			my="lg"
-		>
+		<Container size="lg">
 			<Stack>
 				<TextInput
 					radius="md"
@@ -102,25 +122,27 @@ const Home = () => {
 			size="lg"
 			my="lg"
 		>
-			<Text c="red">Error: {error.message}</Text>
+			<Text c="red">{error.message}</Text>
 		</Container>
 	) : (
 		<Container
 			size="lg"
-			my="lg"
+			my="sm"
+			px="sm"
 		>
 			<Stack>
 				<SpotlightSearch />
 
 				<TextInput
 					radius="md"
-					size="md"
+					size="sm"
 					leftSection={<Search size={18} />}
 					placeholder="Search games"
 					readOnly
 					onClick={() => {
 						spotlight.open();
 					}}
+					color="gray"
 				/>
 
 				{data.pages.map((results, i) => (
@@ -130,32 +152,11 @@ const Home = () => {
 						key={i}
 					>
 						{results.map((game: HomePageGame) => (
-							<Card
-								shadow="md"
-								padding="xs"
-								radius="md"
-								withBorder
+							<GameCard
 								key={game.id}
-								onClick={() => navigate(`/game/${game.id}`)}
-							>
-								<Card.Section>
-									<Image
-										src={
-											game.cover
-												? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
-												: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-										}
-										alt={`Image of ${game.name}`}
-										fallbackSrc="https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-									/>
-								</Card.Section>
-								<Group
-									justify="space-between"
-									mt="sm"
-								>
-									<Text fw={500}>{game.name}</Text>
-								</Group>
-							</Card>
+								game={game}
+								handleFavourite={handleFavourite}
+							/>
 						))}
 					</SimpleGrid>
 				))}
@@ -173,11 +174,6 @@ const Home = () => {
 							: "Nothing more to load"}
 				</Button>
 			</Stack>
-			<div>
-				{isFetching && !isFetchingNextPage
-					? "Fetching..."
-					: null}
-			</div>
 		</Container>
 	);
 };

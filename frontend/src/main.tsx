@@ -6,6 +6,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import {
+	Badge,
+	Button,
+	ColorSchemeScript,
+	createTheme,
+	MantineProvider,
+	Paper,
+} from "@mantine/core";
+import {
 	QueryClient,
 	QueryClientProvider,
 } from "@tanstack/react-query";
@@ -16,6 +24,34 @@ const rootElement = document.getElementById(
 	"root"
 ) as HTMLElement;
 
+const theme = createTheme({
+	fontFamily: "Inter, sans-serif",
+	cursorType: "pointer",
+	components: {
+		Button: Button.extend({
+			defaultProps: {
+				variant: "default",
+				bdrs: "md",
+			},
+		}),
+		Badge: Badge.extend({
+			defaultProps: {
+				variant: "default",
+				bdrs: "md",
+				size: "lg",
+			},
+		}),
+		Paper: Paper.extend({
+			defaultProps: {
+				withBorder: true,
+				shadow: "xs",
+				bdrs: "md",
+				p: "md",
+			},
+		}),
+	},
+});
+
 if (!rootElement.innerHTML) {
 	const root = createRoot(rootElement);
 	root.render(
@@ -24,7 +60,13 @@ if (!rootElement.innerHTML) {
 				<QueryClientProvider client={queryClient}>
 					<AuthContextProvider>
 						<PerformanceReportProvider>
-							<App />
+							<ColorSchemeScript defaultColorScheme="auto" />
+							<MantineProvider
+								defaultColorScheme="auto"
+								theme={theme}
+							>
+								<App />
+							</MantineProvider>
 						</PerformanceReportProvider>
 					</AuthContextProvider>
 					<ReactQueryDevtools initialIsOpen={true} />

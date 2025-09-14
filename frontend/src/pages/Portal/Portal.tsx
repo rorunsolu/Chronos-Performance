@@ -118,9 +118,12 @@ const Portal = () => {
 		}
 	}, [user, navigate]);
 
-	const [activeTab, setActiveTab] = useState<
-		"signup" | "login"
-	>("signup");
+	// const [activeTab, setActiveTab] = useState<
+	// 	"signup" | "login"
+	// >("signup");
+	const [activeTab, setActiveTab] = useState<string | null>(
+		"signup"
+	);
 	const [rootRef, setRootRef] =
 		useState<HTMLDivElement | null>(null);
 	const [controlsRefs, setControlsRefs] = useState<
@@ -157,7 +160,7 @@ const Portal = () => {
 							<Button
 								fullWidth
 								color="teal"
-								onClick={() => navigate("/home")}
+								onClick={() => navigate("/")}
 							>
 								Go to Home
 							</Button>
@@ -177,9 +180,10 @@ const Portal = () => {
 								color="teal"
 								variant="none"
 								value={activeTab}
-								onChange={(value) =>
-									setActiveTab(value as "signup" | "login")
-								}
+								// onChange={(value) =>
+								// 	setActiveTab(value as "signup" | "login")
+								// }
+								onChange={setActiveTab}
 								mb="lg"
 							>
 								<Tabs.List
@@ -225,12 +229,13 @@ const Portal = () => {
 										)}
 									>
 										<TextInput
-											c="white"
 											{...form.getInputProps("email")}
 											label="Email"
 											placeholder="Enter your email"
 											mb="md"
 											withAsterisk
+											type="email"
+											bdrs="md"
 										/>
 										<PasswordInput
 											{...form.getInputProps("password")}
@@ -238,6 +243,7 @@ const Portal = () => {
 											placeholder="Create a password"
 											mb={4}
 											withAsterisk
+											type="password"
 										/>
 
 										<Stack
@@ -302,6 +308,7 @@ const Portal = () => {
 										</Stack>
 										<Button
 											type="submit"
+											variant="filled"
 											fullWidth
 											color="teal"
 											mb="md"
@@ -325,6 +332,7 @@ const Portal = () => {
 												variant="default"
 												fullWidth
 												onClick={handleGuestAccess}
+												hidden={true}
 											>
 												Start without an account
 											</Button>
@@ -352,6 +360,10 @@ const Portal = () => {
 												onClick={() =>
 													setActiveTab("login")
 												}
+												fz="sm"
+												fw={500}
+												c="teal"
+												underline="hover"
 											>
 												Log in
 											</Anchor>
@@ -369,7 +381,6 @@ const Portal = () => {
 										)}
 									>
 										<TextInput
-											c="white"
 											{...form.getInputProps("email")}
 											label="Email"
 											placeholder="Enter your email"
@@ -408,6 +419,7 @@ const Portal = () => {
 												variant="default"
 												fullWidth
 												onClick={handleGuestAccess}
+												hidden={true}
 											>
 												Sign in as a guest
 											</Button>
@@ -436,6 +448,10 @@ const Portal = () => {
 												onClick={() =>
 													setActiveTab("signup")
 												}
+												fz="sm"
+												fw={500}
+												c="teal"
+												underline="hover"
 											>
 												Sign up
 											</Anchor>

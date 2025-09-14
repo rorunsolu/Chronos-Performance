@@ -1,28 +1,21 @@
 import "@/App.css";
+import Protected from "@/auth/Protected";
 import Header from "@/components/Header/Header";
 import Game from "@/pages/Game/Game";
 import Home from "@/pages/Home/Home";
 import Portal from "@/pages/Portal/Portal";
+import Profile from "@/pages/Profile/Profile";
+import { AppShell } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
 import "@mantine/spotlight/styles.css";
 import { Route, Routes } from "react-router-dom";
-import {
-	AppShell,
-	createTheme,
-	MantineProvider,
-} from "@mantine/core";
 
 function App() {
-	const theme = createTheme({
-		fontFamily: "Inter, sans-serif",
-		cursorType: "pointer",
-	});
-
 	return (
-		<MantineProvider
-			theme={theme}
-			defaultColorScheme="dark"
-		>
+		<>
+			<Notifications />
 			<AppShell header={{ height: 56 }}>
 				<AppShell.Header>
 					<Header />
@@ -39,13 +32,21 @@ function App() {
 							element={<Portal />}
 						/>
 						<Route
+							path="/profile/:accUrlId"
+							element={
+								<Protected>
+									<Profile />
+								</Protected>
+							}
+						/>
+						<Route
 							path="/game/:id"
 							element={<Game />}
 						/>
 					</Routes>
 				</AppShell.Main>
 			</AppShell>
-		</MantineProvider>
+		</>
 	);
 }
 

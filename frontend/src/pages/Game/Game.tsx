@@ -1,46 +1,55 @@
+import { UserAuth } from "@/auth/AuthContext";
+import ReportCard from "@/components/Card/ReportCard";
+import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import styles from "@/pages/Game/Game.module.css";
-import cardStyles from "@/pages/Game/ReportCard.module.css";
 import { useForm } from "@mantine/form";
-import dayjs from "dayjs";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { Timestamp } from "firebase/firestore";
-import { ChevronsUpDown, User } from "lucide-react";
-import { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-	Accordion,
 	Badge,
-	Divider,
-	SimpleGrid,
 	Button,
-	Code,
+	Collapse,
 	Container,
 	Fieldset,
 	Group,
+	Image,
 	NumberInput,
 	Paper,
 	Select,
+	Skeleton,
+	Slider,
 	Stack,
 	Switch,
 	Text,
 	Title,
 } from "@mantine/core";
+import {
+	Ban,
+	Calendar1,
+	Check,
+	Wrench,
+} from "lucide-react";
+import StarRating from "@/components/Star Rating/StarRating";
+import type { GameInfo } from "@/hooks/useGameDetails";
+import type { PerformanceReport } from "@/common/types";
 import type {
 	GPUOptions,
-	UpscalingQuality,
-	CPUOptions,
-	UpscalingMethod,
-	Resolution,
-	AspectRatio,
-	AverageGraphicsPreset,
-	RAMOptions,
 	VRAMOptions,
+	RAMOptions,
+	CPUOptions,
 	StorageType,
 	HardwareType,
-	PerformanceReport,
-} from "@/contexts/PerformanceReportContext";
+	AspectRatio,
+	Resolution,
+	AverageGraphicsPreset,
+	UpscalingMethod,
+	UpscalingQuality,
+} from "@/common/types";
 import {
 	AspectRatios,
 	Resolutions,
@@ -54,65 +63,23 @@ import {
 	CPUs,
 	UpscalingQualitys,
 } from "../../common";
-import {
-	keepPreviousData,
-	useQuery,
-} from "@tanstack/react-query";
-
-type GameInfo = {
-	id: number;
-	name: string;
-	cover: {
-		image_id: string;
-	};
-	summary: string;
-	rating: number;
-	genres: {
-		name: string;
-	}[];
-	url: string;
-	game_engines: {
-		name: string;
-		logo?: string;
-	}[];
-	websites: {
-		url: string;
-		type: number;
-	}[];
-	release_dates: {
-		y: number;
-	}[];
-};
 
 const Game = () => {
 	const { id } = useParams<{ id: string }>();
 	const { createReport, reports, fetchReports } =
 		usePerformanceReportHook();
-
+	const [opened, { toggle }] = useDisclosure(false);
 	const gameSpecificReports = reports.filter(
 		(report) => report.IgdbGameId === id
 	);
+	const { user } = UserAuth();
 
-	const { data, status, error } = useQuery<GameInfo[]>({
-		//* DATA REGARDING GAMES SHOULD ALWAYS BE AN ARRAY BRO FGS
-		queryKey: ["gameInformation", id],
-		queryFn: async () => {
-			const response = await fetch(
-				`/api/IGDBapi/gamepage/${id}`
-			);
-			if (!response.ok) {
-				throw new Error(
-					`Failed to fetch game: ${response.status}`
-				);
-			}
-			return response.json();
-		},
-		placeholderData: keepPreviousData,
-	});
+	const { data, status, error } = useGameDetails(id);
 
 	const form = useForm({
 		mode: "uncontrolled",
 		initialValues: {
+			perfRating: undefined as number | undefined,
 			metrics: {
 				averageFps: undefined as number | undefined,
 				minFps: undefined as number | undefined,
@@ -143,16 +110,37 @@ const Game = () => {
 		},
 	});
 
+	const handleSuccessNotification = () => {
+		notifications.show({
+			title: "Report Submitted",
+			message:
+				"Your report has been submitted successfully!",
+			color: "teal",
+			icon: <Check />,
+		});
+	};
+
+	const handleErrorNotification = () => {
+		notifications.show({
+			title: "Report Submission Failed",
+			message: "There was an error submitting your report.",
+			color: "red",
+			icon: <Ban />,
+		});
+	};
+
 	const handleSubmit = async (
 		values: typeof form.values
 	) => {
 		try {
-			const report: PerformanceReport = {
+			const report: Omit<PerformanceReport, "id"> = {
 				IgdbGameId: id ? id : "",
 				IgdbGameName: data ? data[0]?.name : "",
 				reportId: uuidv4(),
 				userId: "",
 				createdAt: new Date() as unknown as Timestamp,
+
+				perfRating: Number(values.perfRating),
 
 				metrics: {
 					averageFps: Number(values.metrics.averageFps),
@@ -188,16 +176,12 @@ const Game = () => {
 				},
 			};
 			await createReport(report);
-			alert("Report submitted successfully!");
+			handleSuccessNotification();
 		} catch (error) {
-			console.error("Error submitting report:", error);
-			alert("Failed to submit the report.");
+			handleErrorNotification();
+			throw new Error("Failed to create report");
 		}
 	};
-
-	const [submittedValues, setSubmittedValues] = useState<
-		typeof form.values | null
-	>(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -205,188 +189,146 @@ const Game = () => {
 		};
 
 		fetchData();
-		// eslint-disable-next-line
 	}, []);
 
 	return status === "success" ? (
-		<Container
-			size="lg"
-			my="lg"
-		>
-			{data.map((game: GameInfo) => (
-				<Stack key={game.id}>
-					<Group>
-						<img
-							src={
-								game.cover
-									? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
-									: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-							}
-							alt={`The game cover for ${game.name}`}
-							className={styles.cover}
-						/>
+		<>
+			<Container
+				size="md"
+				my="lg"
+			>
+				{data?.map((game: GameInfo) => (
+					<Stack key={game.id}>
+						<Group>
+							<div className="relative w-full sm:mb-8">
+								<img
+									src={
+										game.cover
+											? `https://images.igdb.com/igdb/image/upload/t_screenshot_huge/${game.cover.image_id}.jpg`
+											: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+									}
+									alt={`The game cover for ${game.name}`}
+									className="hidden absolute top-[-20px] left-0 min-w-[100%] max-h-[300px] object-cover z-0 sm:block w-screen"
+								/>
+								<div className="relative max-w-fit sm:top-6 sm:left-6 ">
+									<Image
+										src={
+											game.cover
+												? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`
+												: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+										}
+										alt={`The game cover for ${game.name}`}
+										className="relative z-10 max-w-fit"
+									/>
+									<StarRating rating={game.rating} />
+								</div>
+							</div>
 
-						<Stack gap="xs">
-							<Text
-								fw={600}
-								size="xl"
-							>
-								{game.name || "Game title not found"}
-							</Text>
-
-							{game.genres?.length && (
-								<Group
-									gap="xs"
-									mb="sm"
-								>
-									{game.genres.map((g) => (
-										<Badge
-											variant="default"
-											radius="sm"
-											key={g.name}
-										>
-											{g.name}
-										</Badge>
-									))}
-								</Group>
-							)}
-							{game.summary && (
+							<Stack gap="xs">
 								<Text
-									size="sm"
-									className={styles.summary}
+									fw={600}
+									size="xl"
 								>
-									{game.summary}
+									{game.name || "Game title not found"}
 								</Text>
-							)}
-						</Stack>
-					</Group>
-					<Stack gap="5">
-						{typeof game.rating === "number" && (
-							<Badge
-								radius="sm"
-								size="lg"
-								mb="sm"
-								variant="gradient"
-								gradient={{
-									from: "blue",
-									to: "teal",
-									deg: 200,
-								}}
-							>
-								{Math.round(game.rating)} {""}/ {""}100
-							</Badge>
-						)}
 
-						{game.release_dates?.length && (
-							<Text size="sm">
-								Release Date: {game.release_dates[0].y}
-							</Text>
-						)}
-						{game.game_engines?.length && (
-							<Group gap="xs">
-								{game.game_engines.map((engine) => (
+								{game.genres?.length && (
+									<Group
+										gap="xs"
+										mb="sm"
+									>
+										{game.game_engines?.length && (
+											<Group gap="xs">
+												{game.game_engines.map((engine) => (
+													<Badge
+														key={engine.name}
+														leftSection={
+															<Wrench size={14} />
+														}
+														className={styles.badge}
+													>
+														<div className="ml-1">
+															{engine.name}
+														</div>
+													</Badge>
+												))}
+											</Group>
+										)}
+										{game.release_dates?.length && (
+											<Badge
+												className={styles.badge}
+												leftSection={
+													<Calendar1 size={14} />
+												}
+											>
+												<div className="ml-1">
+													{game.release_dates[0].y}
+												</div>
+											</Badge>
+										)}
+										{game.genres?.length && (
+											<Group gap="xs">
+												{game.genres.map((g) => (
+													<Badge
+														key={g.name}
+														className={styles.badge}
+													>
+														{g.name}
+													</Badge>
+												))}
+											</Group>
+										)}
+									</Group>
+								)}
+								{game.summary && (
 									<Text
 										size="sm"
-										key={engine.name}
+										className={styles.summary}
 									>
-										Game Engine: {""}
-										{engine.name}
+										{game.summary}
 									</Text>
-								))}
-							</Group>
-						)}
-					</Stack>
+								)}
+							</Stack>
+						</Group>
 
-					<Accordion
-						chevronSize={16}
-						chevron={<ChevronsUpDown />}
-						disableChevronRotation
-						transitionDuration={0}
-						className={styles.accordion}
-					>
-						<Accordion.Item
-							value="submitreport"
-							className={styles.item}
+						<Button
+							mt="5"
+							size="md"
+							variant="default"
+							onClick={toggle}
+							maw="fit-content"
+							disabled={!user}
 						>
-							<Accordion.Control
-								className={styles.control}
-								bdrs="sm"
-							>
-								<Text
-									size="sm"
-									c="white"
-								>
-									Submit a report
-								</Text>
-							</Accordion.Control>
-							<Accordion.Panel>
+							Start a report
+						</Button>
+
+						<Collapse in={opened}>
+							<Paper>
 								<form
 									onSubmit={form.onSubmit(() => {
-										setSubmittedValues(form.values);
 										handleSubmit(form.values);
 									})}
 								>
-									<Stack
-										gap="lg"
-										mt="lg"
-									>
+									<Stack gap="lg">
 										<Switch
 											{...form.getInputProps(
 												"settings.upscaling",
 												{ type: "checkbox" }
 											)}
 											label="Upscaling Enabled?"
+											defaultChecked={false}
 										/>
 										<Fieldset
-											legend="Performance Metrics"
-											variant="unstyled"
-										>
-											<Stack mt="0">
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.averageFps"
-													)}
-													placeholder="Average FPS"
-													label="Average FPS"
-													withAsterisk
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.minFps"
-													)}
-													placeholder="Minimum FPS"
-													label="Minimum FPS"
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-												<NumberInput
-													{...form.getInputProps(
-														"metrics.maxFps"
-													)}
-													placeholder="Maximum FPS"
-													label="Maximum FPS"
-													suffix="FPS"
-													allowNegative={false}
-													allowDecimal={false}
-													hideControls
-												/>
-											</Stack>
-										</Fieldset>
-
-										<Fieldset
 											disabled={
+												!form.values.settings.upscaling
+											}
+											hidden={
 												!form.values.settings.upscaling
 											}
 											legend="Upscaling"
 											variant="unstyled"
 										>
-											<Stack mt="0">
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"settings.upscalingMethod"
@@ -409,6 +351,57 @@ const Game = () => {
 													checkIconPosition="right"
 													withAsterisk
 												/>
+											</Stack>
+										</Fieldset>
+										<Fieldset
+											legend="Performance Metrics"
+											variant="unstyled"
+										>
+											<Stack>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.averageFps"
+													)}
+													placeholder="Average FPS"
+													label="Average FPS"
+													withAsterisk
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.minFps"
+													)}
+													placeholder="Minimum FPS"
+													label="Minimum FPS"
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+												<NumberInput
+													{...form.getInputProps(
+														"metrics.maxFps"
+													)}
+													placeholder="Maximum FPS"
+													label="Maximum FPS"
+													suffix="FPS"
+													allowNegative={false}
+													allowDecimal={false}
+													hideControls
+													max={600}
+												/>
+											</Stack>
+										</Fieldset>
+										<Fieldset
+											legend="Settings"
+											variant="unstyled"
+										>
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"settings.aspectRatio"
@@ -444,12 +437,11 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
-
 										<Fieldset
 											legend="Hardware"
 											variant="unstyled"
 										>
-											<Stack mt="0">
+											<Stack>
 												<Select
 													{...form.getInputProps(
 														"hardware.cpu"
@@ -520,6 +512,22 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
+										<Fieldset
+											legend="Overall Performance Rating"
+											variant="unstyled"
+											mb="md"
+										>
+											<Slider
+												{...form.getInputProps(
+													"perfRating"
+												)}
+												color="teal"
+												defaultValue={0}
+												thumbSize={20}
+												mt="sm"
+												maw={300}
+											/>
+										</Fieldset>
 									</Stack>
 
 									<Button
@@ -529,244 +537,80 @@ const Game = () => {
 									>
 										Submit
 									</Button>
-
-									<Text mt="md">Form values:</Text>
-									<Code block>
-										{JSON.stringify(form.values, null, 2)}
-									</Code>
-
-									<Text mt="md">Submitted values:</Text>
-									<Code block>
-										{submittedValues
-											? JSON.stringify(
-													submittedValues,
-													null,
-													2
-												)
-											: "–"}
-									</Code>
 								</form>
-							</Accordion.Panel>
-						</Accordion.Item>
-					</Accordion>
+							</Paper>
+						</Collapse>
 
-					<Stack>
-						<Title
-							order={4}
-							fw={500}
-						>
-							Performance Reports
-						</Title>
-
-						{gameSpecificReports.length === 0 ? (
-							<Text>No reports yet. Be the first!</Text>
-						) : (
-							<SimpleGrid
-							// cols={{ base: 1, sm: 2, lg: 3 }}
+						<Stack mt="md">
+							<Title
+								order={4}
+								fw={500}
+								size="xl"
+								mb="xs"
 							>
-								{gameSpecificReports.map(
-									(report: PerformanceReport) => (
-										<ReportCard
-											key={report.reportId}
-											report={report}
-										/>
-									)
-								)}
-							</SimpleGrid>
-						)}
+								Performance Reports
+							</Title>
+
+							{gameSpecificReports.length === 0 ? (
+								<Text mt="-8">
+									No reports yet. Be the first!
+								</Text>
+							) : (
+								<div className={styles.grid}>
+									{gameSpecificReports.map(
+										(report: PerformanceReport) => (
+											<ReportCard
+												key={report.id}
+												report={report}
+											/>
+										)
+									)}
+								</div>
+							)}
+						</Stack>
 					</Stack>
-				</Stack>
-			))}
-		</Container>
+				))}
+			</Container>
+		</>
 	) : status === "pending" ? (
-		<div>Loading...</div>
+		<Container
+			size="md"
+			my="lg"
+		>
+			<Stack gap="5">
+				<Skeleton
+					height={300}
+					width={"100%"}
+					maw={220}
+					radius="md"
+					mb="md"
+				/>
+				<Skeleton
+					height={20}
+					radius="md"
+					width="50%"
+				/>
+				<Skeleton
+					height={20}
+					mt={6}
+					radius="md"
+				/>
+				<Skeleton
+					height={20}
+					mt={6}
+					width="70%"
+					radius="md"
+				/>
+			</Stack>
+		</Container>
 	) : status === "error" ? (
-		<div>Error: {(error as Error).message}</div>
+		<Container
+			size="md"
+			my="lg"
+		>
+			<Text c="red">Error: {error?.message}</Text>
+		</Container>
 	) : null;
 };
 
 export default Game;
-
-export function ReportCard({
-	report,
-}: {
-	report: PerformanceReport;
-}) {
-	return (
-		<Paper
-			withBorder
-			radius="md"
-			className={cardStyles.comment}
-		>
-			<Group>
-				<Paper
-					withBorder
-					radius="xl"
-					p="xs"
-				>
-					<User size={16} />
-				</Paper>
-				<div>
-					<Text fz="sm">User</Text>
-					<Text
-						fz="xs"
-						c="dimmed"
-					>
-						{dayjs(report.createdAt.toDate()).format(
-							"MMMM D, YYYY"
-						)}
-					</Text>
-				</div>
-			</Group>
-			<Stack gap="1">
-				<Stack
-					gap="5"
-					mt="md"
-				>
-					{report.metrics.averageFps && (
-						<Group gap="5">
-							<Text fz="sm">Average FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.averageFps}FPS
-							</Text>
-						</Group>
-					)}
-					{report.metrics.minFps && (
-						<Group gap="5">
-							<Text fz="sm">1% Lows:</Text>
-							<Text
-								fz="sm"
-								c="white"
-							>
-								{report.metrics.minFps}FPS
-							</Text>
-						</Group>
-					)}
-					{report.metrics.maxFps && (
-						<Group gap="5">
-							<Text fz="sm">Max FPS:</Text>
-							<Text fz="sm">
-								{report.metrics.maxFps}FPS
-							</Text>
-						</Group>
-					)}
-				</Stack>
-
-				<Accordion
-					transitionDuration={0}
-					chevronPosition="left"
-				>
-					<Accordion.Item
-						value="viewmore"
-						className={cardStyles.accordion}
-					>
-						<Accordion.Control
-							mt="lg"
-							bdrs="sm"
-						>
-							<Group justify="flex-start">
-								<Text size="sm">View More</Text>
-							</Group>
-						</Accordion.Control>
-						<Accordion.Panel>
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Settings"
-									labelPosition="left"
-								/>
-								<Group gap="5">
-									<Text fz="sm">Upscaling:</Text>
-									<Text fz="sm">
-										{report.settings.upscaling
-											? "Enabled"
-											: "Disabled"}
-									</Text>
-								</Group>
-								{report.settings.upscalingMethod && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Method:</Text>
-										<Text fz="sm">
-											{report.settings.upscalingMethod}
-										</Text>
-									</Group>
-								)}
-								{report.settings.UpscalingQuality && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Quality:</Text>
-										<Text fz="sm">
-											{report.settings.UpscalingQuality}
-										</Text>
-									</Group>
-								)}
-								<Group gap="5">
-									<Text fz="sm">Aspect Ratio:</Text>
-									<Text fz="sm">
-										{report.settings.aspectRatio}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Resolution:</Text>
-									<Text fz="sm">
-										{report.settings.resolution}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Graphics Preset:</Text>
-									<Text fz="sm">
-										{report.settings.averageGraphicsPreset}
-									</Text>
-								</Group>
-							</Stack>
-
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Hardware"
-									labelPosition="left"
-								/>
-
-								<Group gap="5">
-									<Text fz="sm">CPU:</Text>
-									<Text fz="sm">{report.hardware.cpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">GPU:</Text>
-									<Text fz="sm">{report.hardware.gpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">RAM:</Text>
-									<Text fz="sm">{report.hardware.ram}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">VRAM:</Text>
-									<Text fz="sm">
-										{report.hardware.vram}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Storage Type:</Text>
-									<Text fz="sm">
-										{report.hardware.storageType}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Hardware Type:</Text>
-									<Text fz="sm">
-										{report.hardware.hardwareType}
-									</Text>
-								</Group>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
-			</Stack>
-		</Paper>
-	);
-}

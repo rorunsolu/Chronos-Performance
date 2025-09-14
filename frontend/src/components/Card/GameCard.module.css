@@ -1,0 +1,8 @@
+.favourite {
+	position: absolute !important;
+	top: 20px;
+	right: 20px;
+	border-radius: 100%;
+	width: 40px !important;
+	height: 40px !important;
+}
