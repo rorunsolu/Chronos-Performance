@@ -10,8 +10,19 @@ const app = express(); // Creates an instance of an Express application
 // const port = process.env.PORT || 3000; // Sets the port number for the server to listen on
 
 // Both lines below Adds middleware (functions that do stuff with the code, requests and responses)
-app.use(cors());
+//app.use(cors());
 app.use(express.json());
+
+app.use(
+  cors({
+    // For local testing
+    origin: [
+      "http://localhost:5173", // Vite dev server
+      "https://chronos-performance-frontend.vercel.app/", // Vercel deployment
+    ],
+    credentials: true,
+  })
+);
 
 // Sets the route for the root URL ("/") of the application
 app.get("/", (request, response) => {
@@ -20,13 +31,15 @@ app.get("/", (request, response) => {
 });
 
 // Starts the server and listens on the specified port
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
-});
+// app.listen(3000, () => {
+//   console.log("Server running on http://localhost:3000");
+// });
 
 app.use("/api/IGDBapi/results", resultsApi);
 app.use("/api/IGDBapi/homepage", homepageApi);
 app.use("/api/IGDBapi/gamepage", gamepageApi);
+
+export default app;
 
 // Docs
 // https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Express_Nodejs/Displaying_data
