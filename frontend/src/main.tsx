@@ -38,7 +38,7 @@ const theme = createTheme({
 			defaultProps: {
 				variant: "default",
 				bdrs: "md",
-				size: "lg",
+				size: "md",
 			},
 		}),
 		Paper: Paper.extend({

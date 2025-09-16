@@ -239,19 +239,21 @@ const Game = () => {
 									>
 										{game.game_engines?.length && (
 											<Group gap="xs">
-												{game.game_engines.map((engine) => (
-													<Badge
-														key={engine.name}
-														leftSection={
-															<Wrench size={14} />
-														}
-														className={styles.badge}
-													>
-														<div className="ml-1">
-															{engine.name}
-														</div>
-													</Badge>
-												))}
+												{game.game_engines.map(
+													(engine, index) => (
+														<Badge
+															key={index}
+															leftSection={
+																<Wrench size={14} />
+															}
+															className={styles.badge}
+														>
+															<div className="ml-1">
+																{engine.name}
+															</div>
+														</Badge>
+													)
+												)}
 											</Group>
 										)}
 										{game.release_dates?.length && (

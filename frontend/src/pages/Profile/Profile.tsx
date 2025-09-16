@@ -26,7 +26,7 @@ const Profile = () => {
 	const [profileFavorites, setProfileFavorites] = useState<
 		number[]
 	>([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const [, setIsLoading] = useState(true);
 
 	const specificUser = allUsers.find(
 		(userAccount) => userAccount.accUrlId === accUrlId

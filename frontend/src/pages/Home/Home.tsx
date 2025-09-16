@@ -2,6 +2,7 @@ import { UserAuth } from "@/auth/AuthContext";
 import GameCard from "@/components/Card/GameCard";
 import { notifications } from "@mantine/notifications";
 import { Spotlight, spotlight } from "@mantine/spotlight";
+import debounce from "lodash.debounce";
 import { Ban, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +33,10 @@ interface HomePageGame {
 		name: string;
 	}[];
 }
+
+//! How to use Popularity API - NEW FEATURE IDEA
+// https://api-docs.igdb.com/#popscore
+// https://api-docs.igdb.com/#sorting
 
 const Home = () => {
 	const { user, addFavorite } = UserAuth();
@@ -203,6 +208,13 @@ const SpotlightSearch = () => {
 		}
 	}, [dataUpdatedAt]);
 
+	const debouncedSetSearchQuery = debounce(
+		(query: string) => {
+			setSearchQuery(query);
+		},
+		300
+	); // Adjust the delay (300ms) as needed
+
 	const spotlightItems = (data || [])
 		.filter((item: HomePageGame) =>
 			item.name
@@ -246,7 +258,10 @@ const SpotlightSearch = () => {
 
 	return (
 		<Spotlight.Root
-			onQueryChange={setSearchQuery}
+			// onQueryChange={setSearchQuery}
+			onQueryChange={(query) =>
+				debouncedSetSearchQuery(query)
+			}
 			query={searchQuery}
 			closeOnActionTrigger={false}
 			scrollable={spotlightItems.length > 0}
