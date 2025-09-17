@@ -64,9 +64,17 @@ const Home = () => {
 		});
 	};
 
+	// const fetchHomepageGames = async ({ pageParam = 0 }) => {
+	// 	const res = await fetch(
+	// 		`/api/IGDBapi/homepage?offset=${pageParam}`
+	// 	);
+	// 	return res.json();
+	// };
+
 	const fetchHomepageGames = async ({ pageParam = 0 }) => {
+		const baseUrl = import.meta.env.VITE_BACKEND_URL || "";
 		const res = await fetch(
-			`/api/IGDBapi/homepage?offset=${pageParam}`
+			`${baseUrl}/api/IGDBapi/homepage?offset=${pageParam}`
 		);
 		return res.json();
 	};
@@ -195,8 +203,12 @@ const SpotlightSearch = () => {
 		queryFn: async () => {
 			if (!searchQuery.trim()) return [];
 
+			// return fetch(
+			// 	`/api/IGDBapi/results/search?q=${encodeURIComponent(searchQuery)}`
+			// ).then((res) => res.json());
+
 			return fetch(
-				`/api/IGDBapi/results/search?q=${encodeURIComponent(searchQuery)}`
+				`${import.meta.env.VITE_BACKEND_URL || ""}/api/IGDBapi/results/search?q=${encodeURIComponent(searchQuery)}`
 			).then((res) => res.json());
 		},
 		placeholderData: keepPreviousData, // Prevents UI flickering during refetch
