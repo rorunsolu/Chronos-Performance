@@ -26,13 +26,14 @@ export type GameInfo = {
 };
 
 export const useGameDetails = (id: string | undefined) => {
+	const baseUrl = import.meta.env.VITE_BACKEND_PORT || "";
 	const { data, error, isFetching, status } = useQuery<
 		GameInfo[]
 	>({
 		queryKey: ["gameInformation", id],
 		queryFn: async () => {
 			const response = await fetch(
-				`/api/IGDBapi/gamepage/${id}`
+				`${baseUrl}/api/IGDBapi/gamepage/${id}`
 			);
 			if (!response.ok) {
 				throw new Error(
