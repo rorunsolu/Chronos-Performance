@@ -11,11 +11,20 @@ const app = express();
 app.use(express.json());
 
 const port = process.env.BACKEND_PORT || 3000;
-const host = process.env.FRONTEND_URL || "http://localhost:5173";
+// const port = process.env.BACKEND_PORT || 3000;
+//const host = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(
   cors({
-    origin: host,
+    //origin: host,
+    origin: "https://chronos-performance-frontend.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-access-token",
+      "Accept",
+    ],
     credentials: true,
     // origin: [
     //   "http://localhost:5173",
