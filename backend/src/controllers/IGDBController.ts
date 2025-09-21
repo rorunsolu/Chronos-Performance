@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 // The default limit is 10 results per request and the max is 500
 // Source: https://api-docs.igdb.com/#pagination
 
-export async function searchGamesByQuery(query: string) {
+export async function searchGamesByQuery(query: string, res: Response) {
   const accessToken = await getigdbAccessToken();
   const clientID = process.env.IGDB_CLIENT_ID;
 
@@ -40,7 +40,9 @@ export async function searchGamesByQuery(query: string) {
       );
     }
 
-    return await response.json();
+    const data = await response.json();
+    res.json(data);
+    // return res.status(200).json(data);
   } catch (error) {
     console.error("Error (IGDBController) searching games:", error);
     throw new Error("Error (IGDBController) searching games");
@@ -86,7 +88,8 @@ export async function getHomepageGames(req: Request, res: Response) {
     }
 
     const data = await response.json();
-    return res.status(200).json(data);
+    res.json(data);
+    //return res.status(200).json(data);
   } catch (error) {
     return res
       .status(500)

@@ -178,6 +178,7 @@ const Game = () => {
 			await createReport(report);
 			handleSuccessNotification();
 		} catch (error) {
+			console.error(error);
 			handleErrorNotification();
 			throw new Error("Failed to create report");
 		}
@@ -189,6 +190,7 @@ const Game = () => {
 		};
 
 		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return status === "success" ? (

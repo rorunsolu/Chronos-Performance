@@ -36,6 +36,7 @@ const Portal = () => {
 		try {
 			await googleSignIn();
 		} catch (error) {
+			console.error("Google sign-in failed:", error);
 			throw new Error(
 				"Google sign-in failed. Please try again."
 			);
@@ -77,6 +78,7 @@ const Portal = () => {
 			setError(
 				"Failed to sign up. Please check your credentials."
 			);
+			console.error("Failed to sign up:", error);
 			throw new Error(
 				"Failed to sign up. Please check your credentials."
 			);
@@ -90,6 +92,7 @@ const Portal = () => {
 		try {
 			await emailSignIn(email, password);
 		} catch (error) {
+			console.error("Failed to log in:", error);
 			setError(
 				"Failed to log in. Please check your credentials."
 			);
@@ -103,6 +106,7 @@ const Portal = () => {
 		try {
 			await signInAsGuest();
 		} catch (error) {
+			console.error("Failed to sign in as guest:", error);
 			setError(
 				"Failed to sign in as guest. Please try again."
 			);
@@ -441,7 +445,7 @@ const Portal = () => {
 											fz="sm"
 											mt="md"
 										>
-											Don''t have an account?{" "}
+											Don&apos;t have an account?{" "}
 											<Anchor
 												component={Link}
 												to=""

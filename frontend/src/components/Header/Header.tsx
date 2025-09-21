@@ -29,6 +29,7 @@ const Header = () => {
 			await fetchUsers();
 		};
 		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const { setColorScheme } = useMantineColorScheme();
@@ -50,6 +51,7 @@ const Header = () => {
 		try {
 			logOut();
 		} catch (error) {
+			console.error("Failed to log out:", error);
 			throw new Error(
 				"Failed to log out. Please try again."
 			);

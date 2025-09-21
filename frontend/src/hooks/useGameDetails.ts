@@ -26,7 +26,9 @@ export type GameInfo = {
 };
 
 export const useGameDetails = (id: string | undefined) => {
-	const baseUrl = import.meta.env.VITE_BACKEND_PORT || "";
+	const baseUrl =
+		import.meta.env.VITE_PROD_BACKEND_URL ||
+		import.meta.env.VITE_LOCAL_BACKEND_URL;
 	const { data, error, isFetching, status } = useQuery<
 		GameInfo[]
 	>({
