@@ -49,7 +49,7 @@ export type userAccount = {
 
 export const AuthContextProvider: React.FC<
 	AuthContextProviderProps
-> = ({ children }) => {
+> = ({ children }: AuthContextProviderProps) => {
 	const [user, setUser] = useState<User | null>(null);
 
 	const [isGuest, setIsGuest] = useState(false);
@@ -88,6 +88,7 @@ export const AuthContextProvider: React.FC<
 				}
 			}
 		} catch (error) {
+			console.error("Error adding favorite:", error);
 			throw new Error("Failed to add favorite");
 		}
 	};
@@ -108,6 +109,7 @@ export const AuthContextProvider: React.FC<
 				)
 			);
 		} catch (error) {
+			console.error("Error fetching users:", error);
 			throw new Error("Failed to fetch users");
 		}
 	};
@@ -238,6 +240,7 @@ export const AuthContextProvider: React.FC<
 		return () => {
 			unsubscribe();
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

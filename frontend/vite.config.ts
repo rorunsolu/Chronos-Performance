@@ -16,11 +16,11 @@ export default defineConfig({
 		proxy: {
 			"/api": {
 				target:
-					process.env.VITE_BACKEND_PORT ||
+					process.env.VITE_PROD_BACKEND_URL ||
 					"http://localhost:3000",
 				changeOrigin: true,
 				secure: false,
-				rewrite: (path) => path.replace(/^\/api/, ""),
+				//rewrite: (path) => path.replace(/^\/api/, ""), //!DO NOT USE THIS IF YOUR BACKEND ROUTES START WITH /api (.E.G app.use("/api/IGDBapi/results", resultsApi);)
 			},
 		},
 	},

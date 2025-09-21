@@ -2,7 +2,6 @@ import { UserAuth } from "@/auth/AuthContext";
 import GameCard from "@/components/Card/GameCard";
 import { notifications } from "@mantine/notifications";
 import { Spotlight, spotlight } from "@mantine/spotlight";
-import debounce from "lodash.debounce";
 import { Ban, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +47,7 @@ const Home = () => {
 
 		try {
 			await addFavorite(gameId, user.uid);
-		} catch (error) {
+		} catch {
 			handleFavFailNotif();
 			return;
 		}
@@ -65,7 +64,9 @@ const Home = () => {
 	};
 
 	const fetchHomepageGames = async ({ pageParam = 0 }) => {
-		const baseUrl = import.meta.env.VITE_BACKEND_PORT || "";
+		const baseUrl =
+			import.meta.env.VITE_PROD_BACKEND_URL ||
+			import.meta.env.VITE_LOCAL_BACKEND_URL;
 		const res = await fetch(
 			`${baseUrl}/api/IGDBapi/homepage?offset=${pageParam}`
 		);
@@ -187,45 +188,36 @@ const Home = () => {
 export default Home;
 
 const SpotlightSearch = () => {
-	const [searchQuery, setSearchQuery] = useState("");
-	const [updatedAt, setUpdatedAt] = useState(0);
 	const navigate = useNavigate();
 
-	const { data, dataUpdatedAt, isFetching } = useQuery({
-		queryKey: ["spotlightResults", searchQuery],
-		queryFn: async () => {
-			if (!searchQuery.trim()) return [];
+	const [searchQuery, setSearchQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 
-			// return fetch(
-			// 	`/api/IGDBapi/results/search?q=${encodeURIComponent(searchQuery)}`
-			// ).then((res) => res.json());
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setDebouncedQuery(searchQuery);
+		}, 300);
+
+		return () => clearTimeout(timeoutId);
+	}, [searchQuery]);
+	const { data, isFetching } = useQuery({
+		queryKey: ["spotlightResults", debouncedQuery],
+		queryFn: async () => {
+			if (!debouncedQuery.trim()) return [];
 
 			return fetch(
-				`${import.meta.env.VITE_BACKEND_PORT || ""}/api/IGDBapi/results/search?q=${encodeURIComponent(searchQuery)}`
+				`${import.meta.env.VITE_PROD_BACKEND_URL || import.meta.env.VITE_LOCAL_BACKEND_URL}/api/IGDBapi/results/search?q=${encodeURIComponent(debouncedQuery)}`
 			).then((res) => res.json());
 		},
 		placeholderData: keepPreviousData, // Prevents UI flickering during refetch
 	});
-
-	useEffect(() => {
-		if (dataUpdatedAt > updatedAt) {
-			setUpdatedAt(dataUpdatedAt);
-		}
-	}, [dataUpdatedAt]);
-
-	const debouncedSetSearchQuery = debounce(
-		(query: string) => {
-			setSearchQuery(query);
-		},
-		300
-	); // Adjust the delay (300ms) as needed
 
 	const spotlightItems = (data || [])
 		.filter((item: HomePageGame) =>
 			item.name
 				.toString()
 				.toLowerCase()
-				.includes(searchQuery.toLowerCase().trim())
+				.includes(debouncedQuery.toLowerCase().trim())
 		)
 		.map((item: HomePageGame) => (
 			<Spotlight.Action
@@ -238,7 +230,7 @@ const SpotlightSearch = () => {
 							? `https://images.igdb.com/igdb/image/upload/t_cover_big/${item.cover.image_id}.jpg`
 							: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
 					}
-					alt={`Image of ${item.name}`}
+					alt={`${item.name}`}
 					width={50}
 					height={100}
 				/>
@@ -263,10 +255,7 @@ const SpotlightSearch = () => {
 
 	return (
 		<Spotlight.Root
-			// onQueryChange={setSearchQuery}
-			onQueryChange={(query) =>
-				debouncedSetSearchQuery(query)
-			}
+			onQueryChange={setSearchQuery}
 			query={searchQuery}
 			closeOnActionTrigger={false}
 			scrollable={spotlightItems.length > 0}

@@ -55,17 +55,17 @@ const ReportCard = ({
 		};
 
 		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
 		<Paper className={cardStyles.comment}>
 			<Group
 				onClick={() => {
-					{
-						!isProfilePage &&
-							navigate(
-								`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
-							);
+					if (!isProfilePage) {
+						navigate(
+							`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
+						);
 					}
 				}}
 				className={
@@ -108,7 +108,7 @@ const ReportCard = ({
 											? `https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`
 											: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
 									}
-									alt={`Image of ${gameDetails && gameDetails[0]?.name}`}
+									alt={`${gameDetails && gameDetails[0]?.name}`}
 									width={40}
 									height={50}
 									style={{ borderRadius: 5 }}

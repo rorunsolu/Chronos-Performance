@@ -10,26 +10,27 @@ const app = express();
 
 app.use(express.json());
 
-const port = process.env.BACKEND_PORT || 3000;
-// const port = process.env.BACKEND_PORT || 3000;
-//const host = process.env.FRONTEND_URL || "http://localhost:5173";
+const port = process.env.PROD_BACKEND_URL || 3000;
+const host = process.env.PROD_FRONTEND_URL || "http://localhost:5173";
 
 app.use(
   cors({
-    //origin: host,
-    origin: "https://chronos-performance-frontend.vercel.app",
+    origin: host,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
       "x-access-token",
       "Accept",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Credentials",
+      "Origin",
+      "X-Requested-With",
+      "Accept-Encoding",
     ],
     credentials: true,
-    // origin: [
-    //   "http://localhost:5173",
-    //   "https://chronos-performance-frontend.vercel.app",
-    // ],
   })
 );
 
@@ -38,7 +39,7 @@ app.use("/api/IGDBapi/homepage", homepageApi);
 app.use("/api/IGDBapi/gamepage", gamepageApi);
 
 app.get("/", (request, response) => {
-  response.send("Backend is running");
+  response.send("Backend is running on port " + port + " Host: " + host);
   // When a GET request is made to this URL, it responds with a message which gets sent back to the client (frontend)
 });
 

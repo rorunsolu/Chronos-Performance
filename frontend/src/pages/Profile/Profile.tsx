@@ -38,33 +38,37 @@ const Profile = () => {
 			)
 		: [];
 
-	useEffect(() => {
-		const fetchData = async () => {
-			setIsLoading(true);
-			try {
-				await fetchReports();
-				if (specificUser) {
-					const favs = await getUserFavorites(
-						specificUser.userId
+	useEffect(
+		() => {
+			const fetchData = async () => {
+				setIsLoading(true);
+				try {
+					await fetchReports();
+					if (specificUser) {
+						const favs = await getUserFavorites(
+							specificUser.userId
+						);
+						setProfileFavorites(favs);
+					}
+				} catch {
+					throw new Error(
+						"Failed to fetch user data. Please try again."
 					);
-					setProfileFavorites(favs);
+				} finally {
+					setIsLoading(false);
 				}
-			} catch (error) {
-				throw new Error(
-					"Failed to fetch user data. Please try again."
-				);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+			};
 
-		fetchData();
-	}, [
-		accUrlId,
-		specificUser?.userId,
-		fetchReports,
-		getUserFavorites,
-	]);
+			fetchData();
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[
+			accUrlId,
+			specificUser?.userId,
+			fetchReports,
+			getUserFavorites,
+		]
+	);
 
 	return (
 		<Container
