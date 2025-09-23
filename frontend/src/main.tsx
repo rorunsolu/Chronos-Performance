@@ -60,11 +60,8 @@ if (!rootElement.innerHTML) {
 				<QueryClientProvider client={queryClient}>
 					<AuthContextProvider>
 						<PerformanceReportProvider>
-							<ColorSchemeScript defaultColorScheme="auto" />
-							<MantineProvider
-								defaultColorScheme="auto"
-								theme={theme}
-							>
+							<ColorSchemeScript defaultColorScheme="light" />
+							<MantineProvider theme={theme}>
 								<App />
 							</MantineProvider>
 						</PerformanceReportProvider>

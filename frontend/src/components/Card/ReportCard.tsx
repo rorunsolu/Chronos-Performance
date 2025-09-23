@@ -3,13 +3,9 @@ import cardStyles from "@/components/Card/ReportCard.module.css";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import dayjs from "dayjs";
+import { ChevronsUpDown, Trash, User } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	EllipsisVertical,
-	Trash,
-	User,
-} from "lucide-react";
 import {
 	Accordion,
 	Button,
@@ -18,9 +14,9 @@ import {
 	Image,
 	Menu,
 	Paper,
+	Progress,
 	Stack,
 	Text,
-	Title,
 } from "@mantine/core";
 import type { PerformanceReport } from "@/common/types";
 
@@ -98,7 +94,7 @@ const ReportCard = ({
 					</Paper>
 				)}
 
-				<Group w="100%">
+				<Group w={isProfilePage ? "100%" : "auto"}>
 					{isProfilePage ? (
 						<div className="w-full flex justify-between items-center">
 							<Group>
@@ -135,21 +131,22 @@ const ReportCard = ({
 							{reportOwner?.userId === user?.uid && (
 								<Menu
 									shadow="md"
-									width={200}
+									width={120}
 								>
 									<Menu.Target>
 										<Button
 											variant="default"
-											p="5"
+											p="0"
+											w={30}
+											h={30}
 										>
-											<EllipsisVertical size={16} />
+											<ChevronsUpDown size={14} />
 										</Button>
 									</Menu.Target>
 
 									<Menu.Dropdown>
 										<Menu.Item
-											fw={500}
-											color="red"
+											fw={400}
 											leftSection={
 												<Trash
 													size={14}
@@ -160,14 +157,14 @@ const ReportCard = ({
 												deleteReport(report.id);
 											}}
 										>
-											Delete Report
+											Delete
 										</Menu.Item>
 									</Menu.Dropdown>
 								</Menu>
 							)}
 						</div>
 					) : (
-						<>
+						<Stack gap="0">
 							<Text fz="sm">
 								{
 									allUsers.find(
@@ -184,60 +181,111 @@ const ReportCard = ({
 									"MMMM D, YYYY"
 								)}
 							</Text>
-						</>
+						</Stack>
 					)}
 				</Group>
 			</Group>
 			<Stack gap="1">
-				<Group
+				<Stack gap="5">
+					<Group
+						align="center"
+						justify="space-between"
+						mt="md"
+					>
+						<Text fw={500}>Rating</Text>
+						<div className="flex flex-row gap-1">
+							<Text
+								fz="sm"
+								fw={600}
+								c="teal"
+								mt="sm"
+							>
+								{report.perfRating}
+							</Text>
+
+							<Text
+								fz="sm"
+								c="gray.7"
+								fw={500}
+								mt="sm"
+							>
+								out of 100
+							</Text>
+						</div>
+					</Group>
+					<Progress
+						color="teal.5"
+						radius="xs"
+						size="xl"
+						value={report.perfRating}
+					/>
+				</Stack>
+
+				<Stack
 					gap="5"
 					mt="lg"
 					justify="space-between"
 				>
 					{report.metrics.averageFps && (
-						<Stack gap="5">
-							<Title fz="xl">
-								{report.metrics.averageFps}
-							</Title>
-							<Text
-								fz="xs"
-								fw={600}
+						<Group justify="space-between">
+							<Text fz="sm">Average FPS</Text>
+							<Paper
+								withBorder
+								p="sm"
+								w={30}
+								h={30}
+								className={cardStyles.stat}
 							>
-								AVG FPS
-							</Text>
-						</Stack>
+								<Text
+									fz="sm"
+									fw={500}
+								>
+									{report.metrics.averageFps}
+								</Text>
+							</Paper>
+						</Group>
 					)}
-					<Divider
-						size="sm"
-						orientation="vertical"
-					/>
+
 					{report.metrics.minFps && (
-						<Stack gap="5">
-							<Title fz="xl">{report.metrics.minFps}</Title>
-							<Text
-								fz="xs"
-								fw={600}
+						<Group justify="space-between">
+							<Text fz="sm">Minimum FPS</Text>
+							<Paper
+								withBorder
+								p="sm"
+								w={30}
+								h={30}
+								className={cardStyles.stat}
 							>
-								MIN FPS
-							</Text>
-						</Stack>
+								<Text
+									fz="sm"
+									fw={500}
+								>
+									{report.metrics.minFps}
+								</Text>
+							</Paper>
+						</Group>
 					)}
-					<Divider
-						size="sm"
-						orientation="vertical"
-					/>
+
 					{report.metrics.maxFps && (
-						<Stack gap="5">
-							<Title fz="xl">{report.metrics.maxFps}</Title>
-							<Text
-								fz="xs"
-								fw={600}
+						<Group justify="space-between">
+							<Text fz="sm">Maximum FPS</Text>
+							<Paper
+								withBorder
+								p="sm"
+								w={30}
+								h={30}
+								className={cardStyles.stat}
 							>
-								MAX FPS
-							</Text>
-						</Stack>
+								<Text
+									fz="sm"
+									fw={500}
+								>
+									{report.metrics.maxFps}
+								</Text>
+							</Paper>
+						</Group>
 					)}
-				</Group>
+				</Stack>
 
 				<Accordion
 					onClick={(e) => {
@@ -261,7 +309,8 @@ const ReportCard = ({
 								<Divider
 									my="xs"
 									label="Settings"
-									labelPosition="left"
+									labelPosition="center"
+									color="gray.4"
 								/>
 								<Group gap="5">
 									<Text fz="sm">Upscaling:</Text>
@@ -314,7 +363,8 @@ const ReportCard = ({
 								<Divider
 									my="xs"
 									label="Hardware"
-									labelPosition="left"
+									labelPosition="center"
+									color="gray.4"
 								/>
 
 								<Group gap="5">

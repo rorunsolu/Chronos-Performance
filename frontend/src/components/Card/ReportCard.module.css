@@ -14,6 +14,16 @@
 	font-size: var(--mantine-font-size-sm);
 }
 
+.stat {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center;
+
+	border-radius: var(--mantine-spacing-sm);
+	box-shadow: none !important;
+}
+
 .content {
 	& > p:last-child {
 		margin-bottom: 0;
