@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 import {
 	Card,
 	Container,
-	Divider,
 	Group,
 	Image,
 	Paper,
@@ -73,7 +72,7 @@ const Profile = () => {
 	return (
 		<Container
 			size="xs"
-			my="lg"
+			my="md"
 		>
 			<Group
 				justify="flex-start"
@@ -112,7 +111,7 @@ const Profile = () => {
 				<div>
 					<Text
 						size="lg"
-						fw={700}
+						fw={600}
 					>
 						{specificUser?.accName
 							? specificUser.accName
@@ -142,7 +141,7 @@ const Profile = () => {
 					<Group>
 						<FileText size={24} />
 						<Stack gap="0">
-							<Text fw={700}>
+							<Text fw={600}>
 								{userSpecificReports.length}
 							</Text>
 							<Text
@@ -161,7 +160,7 @@ const Profile = () => {
 					<Group>
 						<Heart size={24} />
 						<Stack gap="0">
-							<Text fw={700}>
+							<Text fw={600}>
 								{profileFavorites.length}
 							</Text>
 							<Text
@@ -175,12 +174,10 @@ const Profile = () => {
 				</Card>
 			</SimpleGrid>
 
-			<Divider
-				my="lg"
+			<Stack
+				gap="lg"
 				mt="xl"
-			/>
-
-			<Stack gap="md">
+			>
 				<Text
 					size="md"
 					fw={500}

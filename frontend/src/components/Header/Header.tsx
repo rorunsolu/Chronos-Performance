@@ -125,7 +125,7 @@ const Header = () => {
 						</ActionIcon>
 						{user !== null ? (
 							<Menu
-								width={260}
+								width={220}
 								position="bottom-end"
 								transitionProps={{
 									transition: "pop-top-right",

@@ -96,7 +96,11 @@ const Home = () => {
 	});
 
 	return status === "pending" ? (
-		<Container size="lg">
+		<Container
+			size="lg"
+			my="sm"
+			px="sm"
+		>
 			<Stack>
 				<TextInput
 					radius="md"
@@ -127,7 +131,8 @@ const Home = () => {
 	) : status === "error" ? (
 		<Container
 			size="lg"
-			my="lg"
+			my="sm"
+			px="sm"
 		>
 			<Text c="red">{error.message}</Text>
 		</Container>
@@ -154,7 +159,7 @@ const Home = () => {
 
 				{data.pages.map((results, i) => (
 					<SimpleGrid
-						cols={{ base: 1, xs: 2, sm: 3, md: 4, lg: 4 }}
+						cols={{ base: 1, xs: 3, sm: 4, md: 4, lg: 4 }}
 						mb="lg"
 						key={i}
 					>
