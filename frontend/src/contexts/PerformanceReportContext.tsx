@@ -42,7 +42,6 @@ export const PerformanceReportProvider = ({
 					b.createdAt.toMillis() - a.createdAt.toMillis()
 			)
 		);
-		console.log("Reports fetched");
 	};
 
 	const createReport = async (
@@ -74,7 +73,7 @@ export const PerformanceReportProvider = ({
 					...data,
 				},
 			]);
-			console.log("Report created:", docRef.id);
+
 			return docRef.id;
 		} catch (error) {
 			throw new Error(`Error creating report: ${error}`);
@@ -92,7 +91,6 @@ export const PerformanceReportProvider = ({
 			setReports((prev) =>
 				prev.filter((report) => report.id !== id)
 			);
-			console.log("Report deleted:", id);
 		} catch (error) {
 			throw new Error(`Error deleting report: ${error}`);
 		}

@@ -42,9 +42,7 @@ export async function searchGamesByQuery(query: string, res: Response) {
 
     const data = await response.json();
     res.json(data);
-    // return res.status(200).json(data);
-  } catch (error) {
-    console.error("Error (IGDBController) searching games:", error);
+  } catch {
     throw new Error("Error (IGDBController) searching games");
   }
 }
@@ -133,8 +131,7 @@ export async function getGamePageInfo(req: Request, res: Response) {
     }
     const data = await response.json();
     res.json(data);
-  } catch (error) {
-    console.error("Error (IGDBController) fetching game page info:", error);
+  } catch {
     throw new Error("Error (IGDBController) fetching game page info");
   }
 }

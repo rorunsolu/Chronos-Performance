@@ -11,11 +11,8 @@ router.get("/search", async (request, response) => {
   }
 
   try {
-    // const results = await searchGamesByQuery(query);
-    // response.json(results);
     await searchGamesByQuery(query, response);
-  } catch (error) {
-    console.error("Error in search route:", error);
+  } catch {
     response.status(500).json({ error: "Internal server error" });
   }
 });

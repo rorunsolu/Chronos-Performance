@@ -87,8 +87,7 @@ export const AuthContextProvider: React.FC<
 					);
 				}
 			}
-		} catch (error) {
-			console.error("Error adding favorite:", error);
+		} catch {
 			throw new Error("Failed to add favorite");
 		}
 	};
@@ -108,8 +107,7 @@ export const AuthContextProvider: React.FC<
 						b.accCreationDate.toMillis()
 				)
 			);
-		} catch (error) {
-			console.error("Error fetching users:", error);
+		} catch {
 			throw new Error("Failed to fetch users");
 		}
 	};
@@ -232,8 +230,6 @@ export const AuthContextProvider: React.FC<
 				if (currentUser) {
 					await fetchFavorites(currentUser.uid);
 				}
-
-				console.log("Current user is:", currentUser);
 			}
 		);
 
