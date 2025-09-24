@@ -177,8 +177,7 @@ const Game = () => {
 			};
 			await createReport(report);
 			handleSuccessNotification();
-		} catch (error) {
-			console.error(error);
+		} catch {
 			handleErrorNotification();
 			throw new Error("Failed to create report");
 		}

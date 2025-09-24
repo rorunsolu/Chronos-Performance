@@ -37,7 +37,7 @@ const theme = createTheme({
 		Badge: Badge.extend({
 			defaultProps: {
 				variant: "default",
-				bdrs: "md",
+				bdrs: "sm",
 				size: "md",
 			},
 		}),

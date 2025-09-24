@@ -7,8 +7,7 @@ const router = express.Router();
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     await getGamePageInfo(req, res);
-  } catch (error) {
-    console.error("Error in route handler:", error);
+  } catch {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

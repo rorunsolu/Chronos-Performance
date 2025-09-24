@@ -20,10 +20,9 @@ export async function getigdbAccessToken() {
     }
 
     const data: { access_token: string } = await response.json();
-    console.log(data.access_token);
+
     return data.access_token;
-  } catch (error) {
-    console.error("Error fetching IGDB access token:", error);
+  } catch {
     throw new Error("Failed to fetch IGDB access token");
   }
 }

@@ -50,8 +50,7 @@ const Header = () => {
 	const handleSignOut = async () => {
 		try {
 			logOut();
-		} catch (error) {
-			console.error("Failed to log out:", error);
+		} catch {
 			throw new Error(
 				"Failed to log out. Please try again."
 			);

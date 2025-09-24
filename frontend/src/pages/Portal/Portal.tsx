@@ -35,8 +35,7 @@ const Portal = () => {
 	const handleGoogleSignUp = async () => {
 		try {
 			await googleSignIn();
-		} catch (error) {
-			console.error("Google sign-in failed:", error);
+		} catch {
 			throw new Error(
 				"Google sign-in failed. Please try again."
 			);
@@ -74,11 +73,11 @@ const Portal = () => {
 	) => {
 		try {
 			await emailSignUp(email, password);
-		} catch (error) {
+		} catch {
 			setError(
 				"Failed to sign up. Please check your credentials."
 			);
-			console.error("Failed to sign up:", error);
+
 			throw new Error(
 				"Failed to sign up. Please check your credentials."
 			);
@@ -91,8 +90,7 @@ const Portal = () => {
 	) => {
 		try {
 			await emailSignIn(email, password);
-		} catch (error) {
-			console.error("Failed to log in:", error);
+		} catch {
 			setError(
 				"Failed to log in. Please check your credentials."
 			);
@@ -105,8 +103,7 @@ const Portal = () => {
 	const handleGuestAccess = async () => {
 		try {
 			await signInAsGuest();
-		} catch (error) {
-			console.error("Failed to sign in as guest:", error);
+		} catch {
 			setError(
 				"Failed to sign in as guest. Please try again."
 			);
