@@ -10,3 +10,9 @@ body {
 .m_4ba554d4.mantine-Accordion-content {
 	padding: 0;
 }
+
+.mantine-Carousel-control.m_64f58e10 {
+	background: hsla(172, 77%, 37%) !important;
+	width: 35px !important;
+	height: 35px !important;
+}

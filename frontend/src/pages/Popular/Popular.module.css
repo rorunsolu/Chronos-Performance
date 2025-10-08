@@ -1,0 +1,20 @@
+.slider {
+	display: flex;
+	gap: 1rem;
+
+	width: 100%;
+
+	overflow-x: auto;
+	white-space: nowrap;
+}
+
+.scrollContainer {
+	width: 100% !important;
+}
+
+.control {
+	background: white !important;
+}
+.m_87cf2631 {
+	background: white !important;
+}

@@ -230,6 +230,8 @@ export const AuthContextProvider: React.FC<
 				if (currentUser) {
 					await fetchFavorites(currentUser.uid);
 				}
+
+				console.log("Auth State Changed: ", currentUser);
 			}
 		);
 

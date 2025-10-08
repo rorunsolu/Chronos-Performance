@@ -3,14 +3,16 @@ import ChronosLogo from "@/components/Branding/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
 import cx from "clsx";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+	NavLink as RouterNavLink,
+	useNavigate,
+} from "react-router-dom";
 import {
 	ActionIcon,
 	Avatar,
 	Button,
 	Group,
 	Menu,
-	NavLink,
 	Text,
 	useComputedColorScheme,
 	useMantineColorScheme,
@@ -38,7 +40,10 @@ const Header = () => {
 		{ getInitialValueInEffect: true }
 	);
 
-	const links = [{ link: "/", label: "Home" }];
+	const links = [
+		{ link: "/", label: "Home" },
+		{ link: "/popular", label: "Popular" },
+	];
 	const [active, setActive] = useState(links[0].link);
 
 	const [userMenuOpened, setUserMenuOpened] =
@@ -62,23 +67,29 @@ const Header = () => {
 	)?.accUrlId;
 
 	const items = links.map((link) => (
-		<NavLink
+		<RouterNavLink
 			key={link.label}
-			href={link.link}
-			label={link.label}
-			color="black"
-			variant="subtle"
-			fw={500}
-			bdrs="md"
-			p="xs"
-			py={5}
+			to={link.link}
 			data-active={active === link.link || undefined}
-			active={active === link.link}
 			onClick={() => {
 				setActive(link.link);
-				navigate(link.link);
 			}}
-		/>
+			className={cx(classes.link, {
+				[classes.linkActive]: active === link.link,
+			})}
+			color={active === link.link ? "teal" : "black"}
+		>
+			<Text
+				fw={500}
+				size="sm"
+				c={active === link.link ? "teal" : "black"}
+				className={cx(classes.link, {
+					[classes.linkActive]: active === link.link,
+				})}
+			>
+				{link.label}
+			</Text>
+		</RouterNavLink>
 	));
 
 	return (
@@ -93,12 +104,9 @@ const Header = () => {
 					w={"100%"}
 					ml="md"
 				>
-					<Group
-						gap={5}
-						className={classes.links}
-					>
+					<div className="flex items-center ml-2">
 						{items}
-					</Group>
+					</div>
 					<Group>
 						<ActionIcon
 							onClick={() =>
