@@ -13,6 +13,7 @@ import {
 
 interface HomePageGame {
 	id: number;
+	game_id: number;
 	name: string;
 	cover: {
 		image_id: string;
@@ -27,21 +28,29 @@ interface HomePageGame {
 const GameCard = ({
 	game,
 	handleFavourite,
+	isOnPopularPage,
 }: {
 	game: HomePageGame;
 	handleFavourite: (gameId: number) => Promise<void>;
+	isOnPopularPage: boolean;
 }) => {
 	const navigate = useNavigate();
 	const { favorites, user } = UserAuth();
 	const isFavorited =
-		favorites.filter((fav) => fav === game.id).length > 0;
+		favorites.filter(
+			(fav) => fav === game.id || fav === game.game_id
+		).length > 0;
 
 	return (
 		<Card
 			key={game.id}
-			onClick={() => navigate(`/game/${game.id}`)}
-			className="relative cursor-pointer"
+			onClick={() =>
+				navigate(
+					`/game/${isOnPopularPage ? game.game_id : game.id}`
+				)
+			}
 			p={0}
+			className={` ${isOnPopularPage ? styles.card : "cursor-pointer relative"} `}
 		>
 			<Card.Section className="relative">
 				<Image
@@ -56,20 +65,22 @@ const GameCard = ({
 				<Button
 					variant="light"
 					className={styles.favourite}
-					color="black"
+					color={isFavorited ? "black" : "black"}
 					bdrs="100"
 					p="0"
 					bd="80"
 					onClick={(e) => {
 						e.stopPropagation();
-						handleFavourite(game.id);
+						handleFavourite(
+							isOnPopularPage ? game.game_id : game.id
+						);
 					}}
 					autoContrast
 					hidden={!user}
 				>
 					<Heart
 						fill={isFavorited ? "red" : "none"}
-						stroke="white"
+						stroke={isFavorited ? "red" : "white"}
 						size={20}
 					/>
 				</Button>
@@ -81,6 +92,7 @@ const GameCard = ({
 			>
 				<Text
 					fw={500}
+					size="sm"
 					truncate="end"
 				>
 					{game.name}

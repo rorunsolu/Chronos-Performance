@@ -87,7 +87,6 @@ export async function getHomepageGames(req: Request, res: Response) {
 
     const data = await response.json();
     res.json(data);
-    //return res.status(200).json(data);
   } catch (error) {
     return res
       .status(500)
@@ -133,5 +132,96 @@ export async function getGamePageInfo(req: Request, res: Response) {
     res.json(data);
   } catch {
     throw new Error("Error (IGDBController) fetching game page info");
+  }
+}
+
+export async function getGamesByPopularity(req: Request, res: Response) {
+  const accessToken = await getigdbAccessToken();
+  const clientID = process.env.IGDB_CLIENT_ID;
+
+  if (!accessToken || !clientID) {
+    throw new Error("IGDB access token or client ID not found");
+  }
+
+  const url = "https://api.igdb.com/v4/popularity_primitives";
+
+  const popularityType = Number(req.query.popularity_type) || 5; // defaults to peak 24hr player count
+
+  const body = `
+    fields id, external_popularity_source, external_popularity_source.name, game_id, value, popularity_type, popularity_type.name;
+    where popularity_type = ${popularityType};
+    sort value desc;
+    limit 20;
+    offset 0;
+  `;
+
+  try {
+    const responseData = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Client-ID": clientID,
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+
+    if (!responseData.ok) {
+      throw new Error(
+        `Error (IGDBController) fetching games by popularity: ${responseData.status}`
+      );
+    }
+
+    const data = await responseData.json();
+    const gameIdFromResponse = data.map((item: any) => item.game_id);
+
+    if (gameIdFromResponse.length === 0) {
+      return res.status(404).json({ error: "No popular games found" });
+    }
+
+    const gamesUrl = "https://api.igdb.com/v4/games";
+    const gameBody = `
+    fields name, cover.image_id;
+    where id = (${gameIdFromResponse.join(
+      ","
+    )}) & cover != null & cover.image_id != null;
+    limit 20;
+    offset 0;
+    `;
+
+    const reponseDataPart2 = await fetch(gamesUrl, {
+      method: "POST",
+      headers: {
+        "Client-ID": clientID,
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: gameBody,
+    });
+    if (!reponseDataPart2.ok) {
+      throw new Error(
+        `Error (IGDBController) fetching games by popularity part 2: ${reponseDataPart2.status}`
+      );
+    }
+
+    const dataPart2 = await reponseDataPart2.json();
+
+    const mergedData = data.map((item: any) => {
+      const gameDetails = dataPart2.find(
+        (gameFound: any) => gameFound.id === item.game_id
+      );
+      return {
+        ...item,
+        name: gameDetails.name,
+        cover: gameDetails.cover,
+      };
+    });
+    res.json(mergedData);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Error (IGDBController) fetching games by popularity" });
   }
 }

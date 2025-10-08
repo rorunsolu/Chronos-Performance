@@ -21,6 +21,7 @@ import {
 } from "@mantine/core";
 
 interface HomePageGame {
+	game_id: number;
 	id: number;
 	name: string;
 	cover: {
@@ -168,6 +169,7 @@ const Home = () => {
 								key={game.id}
 								game={game}
 								handleFavourite={handleFavourite}
+								isOnPopularPage={false}
 							/>
 						))}
 					</SimpleGrid>

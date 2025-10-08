@@ -1,5 +1,6 @@
 import gamepageApi from "../routes/gamepageApi";
 import homepageApi from "../routes/homepageApi";
+import popularPageApi from "../routes/popularPageApi";
 import resultsApi from "../routes/resultsApi";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -37,6 +38,7 @@ app.use(
 app.use("/api/IGDBapi/results", resultsApi);
 app.use("/api/IGDBapi/homepage", homepageApi);
 app.use("/api/IGDBapi/gamepage", gamepageApi);
+app.use("/api/IGDBapi/popular", popularPageApi);
 
 app.get("/", (request, response) => {
   response.send("Backend is running on port " + port + " Host: " + host);
