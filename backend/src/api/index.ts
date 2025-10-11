@@ -1,3 +1,4 @@
+import eventApi from "../routes/eventApi";
 import gamepageApi from "../routes/gamepageApi";
 import homepageApi from "../routes/homepageApi";
 import popularPageApi from "../routes/popularPageApi";
@@ -39,6 +40,7 @@ app.use("/api/IGDBapi/results", resultsApi);
 app.use("/api/IGDBapi/homepage", homepageApi);
 app.use("/api/IGDBapi/gamepage", gamepageApi);
 app.use("/api/IGDBapi/popular", popularPageApi);
+app.use("/api/IGDBapi/events", eventApi);
 
 app.get("/", (request, response) => {
   response.send("Backend is running on port " + port + " Host: " + host);

@@ -12,7 +12,11 @@ body {
 }
 
 .mantine-Carousel-control.m_64f58e10 {
-	background: hsla(172, 77%, 37%) !important;
+	background: rgba(255, 255, 255, 0.514) !important;
 	width: 35px !important;
 	height: 35px !important;
+
+	svg {
+		stroke: white !important;
+	}
 }
