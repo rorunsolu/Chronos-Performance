@@ -1,5 +1,6 @@
 import { UserAuth } from "@/auth/AuthContext";
 import GameCard from "@/components/Card/GameCard";
+import EventCarousel from "@/components/Carousel/EventCarousel";
 import { Carousel } from "@mantine/carousel";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
@@ -106,6 +107,34 @@ const Popular = () => {
 			return mostPlayedData;
 		},
 	});
+
+	if (
+		steamPosRevQuery.error ||
+		peak24HrQuery.error ||
+		mostPlayedQuery.error
+	) {
+		return (
+			<Container
+				size="lg"
+				my="md"
+			>
+				<Stack
+					align="center"
+					justify="center"
+					style={{ minHeight: "300px" }}
+				>
+					<Text
+						c="red"
+						fw={600}
+						size="lg"
+					>
+						Failed to load popular games. Please try again
+						later.
+					</Text>
+				</Stack>
+			</Container>
+		);
+	}
 
 	if (
 		steamPosRevQuery.isLoading ||
@@ -243,23 +272,29 @@ const Popular = () => {
 		);
 	}
 
-	if (mostPlayedQuery.error) {
-		return <Text>Error loading most played games.</Text>;
-	}
-
 	return (
 		<Container
 			size="lg"
 			my="md"
 		>
 			<Stack>
+				<Stack mb="lg">
+					<Text
+						fw={600}
+						size="xl"
+					>
+						Events
+					</Text>
+					<EventCarousel />
+				</Stack>
+
 				<Stack>
 					<Text fw={600}>Most Positive Reviews</Text>
 
 					<Carousel
 						type="container"
 						slideSize={{
-							base: "100%",
+							base: "66.6666%",
 							"300px": "40%",
 							"500px": "13.333333%",
 							"700px": "8.333333%",
@@ -295,7 +330,7 @@ const Popular = () => {
 					<Carousel
 						type="container"
 						slideSize={{
-							base: "100%",
+							base: "66.6666%",
 							"300px": "40%",
 							"500px": "13.333333%",
 							"700px": "8.333333%",
@@ -331,7 +366,7 @@ const Popular = () => {
 					<Carousel
 						type="container"
 						slideSize={{
-							base: "100%",
+							base: "66.6666%",
 							"300px": "40%",
 							"500px": "13.333333%",
 							"700px": "8.333333%",
