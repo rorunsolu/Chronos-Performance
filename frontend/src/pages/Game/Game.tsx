@@ -1,5 +1,6 @@
 import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
+import StatCard from "@/components/Card/StatCard";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import styles from "@/pages/Game/Game.module.css";
@@ -7,9 +8,15 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Timestamp } from "firebase/firestore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import {
+	getAvgGamePerfRating,
+	getAvgPerfRatingForOtherGames,
+	getRandomGpuAverageFps,
+	getRandomGpuName,
+} from "@/hooks/statisticsHook";
 import {
 	Badge,
 	Button,
@@ -21,6 +28,7 @@ import {
 	NumberInput,
 	Paper,
 	Select,
+	SimpleGrid,
 	Skeleton,
 	Slider,
 	Stack,
@@ -192,6 +200,53 @@ const Game = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	useEffect(() => {
+		const randoGpuName = getRandomGpuName(
+			gameSpecificReports
+		);
+		const calculatedRandomGpuFps = getRandomGpuAverageFps(
+			gameSpecificReports,
+			randoGpuName
+		);
+		const calculatedAveragePerfRating =
+			getAvgGamePerfRating(
+				gameSpecificReports,
+				id ? id : ""
+			);
+		const calculatedOtherGamesAvg =
+			getAvgPerfRatingForOtherGames(reports, id ? id : "");
+		let diff = null;
+		if (calculatedOtherGamesAvg > 0) {
+			diff = Math.round(
+				((calculatedAveragePerfRating -
+					calculatedOtherGamesAvg) /
+					calculatedOtherGamesAvg) *
+					100
+			);
+		}
+
+		setRandomGpuAvgFps(calculatedRandomGpuFps);
+		setRandomGpuName(randoGpuName);
+		setAvgPerfRating(calculatedAveragePerfRating);
+		setPerfRatingDiff(diff);
+	}, [gameSpecificReports, id, reports]);
+
+	const [perfRatingDiff, setPerfRatingDiff] = useState<
+		number | null
+	>(null);
+
+	const [avgPerfRating, setAvgPerfRating] = useState<
+		number | null
+	>(null);
+
+	const [randomGpuAvgFps, setRandomGpuAvgFps] = useState<
+		number | null
+	>(null);
+
+	const [randomGpuName, setRandomGpuName] = useState<
+		string | null
+	>(null);
+
 	return status === "success" ? (
 		<>
 			<Container
@@ -293,6 +348,25 @@ const Game = () => {
 								)}
 							</Stack>
 						</Group>
+
+						<SimpleGrid cols={{ base: 1, xs: 2, md: 4 }}>
+							{avgPerfRating !== null &&
+								perfRatingDiff !== null && (
+									<StatCard
+										title="Avg Perf rating"
+										about="Average performance rating compared to other games"
+										avgPerfRating={avgPerfRating}
+										diff={perfRatingDiff}
+									/>
+								)}
+						</SimpleGrid>
+
+						{randomGpuName && randomGpuAvgFps !== null && (
+							<Text>
+								Users with a {randomGpuName} are averaging{" "}
+								{randomGpuAvgFps} fps
+							</Text>
+						)}
 
 						<Button
 							mt="5"
