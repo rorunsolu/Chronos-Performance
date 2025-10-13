@@ -1,0 +1,14 @@
+.report,
+.gpu {
+	border-bottom: 0 !important;
+	border-left: 0 !important;
+}
+
+.report:last-child,
+.gpu:last-child {
+	border-bottom: 1px solid var(--mantine-color-gray-3) !important;
+}
+
+.gpu:last-child {
+	border-bottom: 1px solid var(--mantine-color-gray-3) !important;
+}

@@ -1,6 +1,7 @@
 import "@/App.css";
 import Protected from "@/auth/Protected";
 import Header from "@/components/Header/Header";
+import Sidebar from "@/components/Sidebar/Sidebar";
 import Game from "@/pages/Game/Game";
 import Home from "@/pages/Home/Home";
 import Popular from "@/pages/Popular/Popular";
@@ -18,7 +19,14 @@ function App() {
 	return (
 		<>
 			<Notifications />
-			<AppShell header={{ height: 56 }}>
+			<AppShell
+				header={{ height: 56 }}
+				aside={{
+					width: 450,
+					breakpoint: "md",
+					collapsed: { desktop: false, mobile: true },
+				}}
+			>
 				<AppShell.Header>
 					<Header />
 				</AppShell.Header>
@@ -51,6 +59,10 @@ function App() {
 						/>
 					</Routes>
 				</AppShell.Main>
+
+				<AppShell.Aside>
+					<Sidebar />
+				</AppShell.Aside>
 			</AppShell>
 		</>
 	);
