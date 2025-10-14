@@ -264,17 +264,6 @@ export const AuthContextProvider: React.FC<
 	);
 };
 
-export const UserAuth = (): AuthContextType => {
-	const context = useContext(AuthContext);
-
-	if (context === undefined) {
-		throw new Error(
-			"useAuth must be used within an AuthProvider"
-		);
-	}
-	return context;
-};
-
 interface AuthContextType {
 	isGuest: boolean;
 	user: User | null;
@@ -303,3 +292,14 @@ interface AuthContextType {
 interface AuthContextProviderProps {
 	children: ReactNode;
 }
+
+export const UserAuth = (): AuthContextType => {
+	const context = useContext(AuthContext);
+
+	if (!context) {
+		throw new Error(
+			"useAuth must be used within an AuthContextProvider"
+		);
+	}
+	return context;
+};

@@ -7,9 +7,7 @@ import { ChevronsUpDown, Trash, User } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-	Accordion,
 	Button,
-	Divider,
 	Group,
 	Image,
 	Menu,
@@ -85,7 +83,7 @@ const ReportCard = ({
 						) : (
 							<Paper
 								withBorder
-								radius="xl"
+								radius={100}
 								p="xs"
 							>
 								<User size={16} />
@@ -186,13 +184,21 @@ const ReportCard = ({
 				</Group>
 			</Group>
 			<Stack gap="1">
-				<Stack gap="5">
+				<Stack
+					gap="5"
+					mt={-10}
+				>
 					<Group
-						align="center"
+						align="flex-end"
 						justify="space-between"
 						mt="md"
 					>
-						<Text fw={500}>Rating</Text>
+						<Text
+							fz="sm"
+							fw={500}
+						>
+							Rating
+						</Text>
 						<div className="flex flex-row gap-1">
 							<Text
 								fz="sm"
@@ -230,7 +236,7 @@ const ReportCard = ({
 						<Group justify="space-between">
 							<Text fz="sm">Average FPS</Text>
 							<Paper
-								withBorder
+								withBorder={false}
 								p="sm"
 								w={30}
 								h={30}
@@ -250,7 +256,7 @@ const ReportCard = ({
 						<Group justify="space-between">
 							<Text fz="sm">Minimum FPS</Text>
 							<Paper
-								withBorder
+								withBorder={false}
 								p="sm"
 								w={30}
 								h={30}
@@ -270,7 +276,7 @@ const ReportCard = ({
 						<Group justify="space-between">
 							<Text fz="sm">Maximum FPS</Text>
 							<Paper
-								withBorder
+								withBorder={false}
 								p="sm"
 								w={30}
 								h={30}
@@ -286,121 +292,6 @@ const ReportCard = ({
 						</Group>
 					)}
 				</Stack>
-
-				<Accordion
-					onClick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Accordion.Item
-						value="viewmore"
-						className={cardStyles.accordion}
-					>
-						<Accordion.Control
-							mt="lg"
-							bdrs="sm"
-							className={cardStyles.control}
-						></Accordion.Control>
-						<Accordion.Panel>
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Settings"
-									labelPosition="center"
-									color="gray.4"
-								/>
-								<Group gap="5">
-									<Text fz="sm">Upscaling:</Text>
-									<Text fz="sm">
-										{report.settings.upscaling
-											? "Enabled"
-											: "Disabled"}
-									</Text>
-								</Group>
-								{report.settings.upscalingMethod && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Method:</Text>
-										<Text fz="sm">
-											{report.settings.upscalingMethod}
-										</Text>
-									</Group>
-								)}
-								{report.settings.UpscalingQuality && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Quality:</Text>
-										<Text fz="sm">
-											{report.settings.UpscalingQuality}
-										</Text>
-									</Group>
-								)}
-								<Group gap="5">
-									<Text fz="sm">Aspect Ratio:</Text>
-									<Text fz="sm">
-										{report.settings.aspectRatio}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Resolution:</Text>
-									<Text fz="sm">
-										{report.settings.resolution}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Graphics Preset:</Text>
-									<Text fz="sm">
-										{report.settings.averageGraphicsPreset}
-									</Text>
-								</Group>
-							</Stack>
-
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Hardware"
-									labelPosition="center"
-									color="gray.4"
-								/>
-
-								<Group gap="5">
-									<Text fz="sm">CPU:</Text>
-									<Text fz="sm">{report.hardware.cpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">GPU:</Text>
-									<Text fz="sm">{report.hardware.gpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">RAM:</Text>
-									<Text fz="sm">{report.hardware.ram}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">VRAM:</Text>
-									<Text fz="sm">
-										{report.hardware.vram}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Storage Type:</Text>
-									<Text fz="sm">
-										{report.hardware.storageType}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Hardware Type:</Text>
-									<Text fz="sm">
-										{report.hardware.hardwareType}
-									</Text>
-								</Group>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
 			</Stack>
 		</Paper>
 	);

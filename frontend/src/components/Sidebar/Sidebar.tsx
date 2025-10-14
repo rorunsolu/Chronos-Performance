@@ -2,6 +2,7 @@ import styles from "@/components/Sidebar/Sidebar.module.css";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	Badge,
 	Group,
@@ -17,8 +18,7 @@ import {
 const Sidebar = () => {
 	const { reports, fetchReports } =
 		usePerformanceReportHook();
-	const top5Gpus = getReportedGpus(reports);
-	const recentReports = get10MostRecentReports(reports);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -28,7 +28,15 @@ const Sidebar = () => {
 		fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+	const top5Gpus = getReportedGpus(reports);
+	const recentReports = get10MostRecentReports(reports);
 
+	const getRatingColor = (rating: number) => {
+		if (rating > 70) return "green.5";
+		if (rating > 50) return "yellow.5";
+		if (rating > 40) return "orange.5";
+		return "red.7";
+	};
 	return (
 		<Stack gap="0">
 			<Stack m="md">
@@ -68,6 +76,7 @@ const Sidebar = () => {
 					shadow="0"
 					bdrs={0}
 					className={styles.report}
+					onClick={() => navigate(`/report/${report.id}`)}
 				>
 					<Group justify="space-between">
 						<Stack gap={0}>
@@ -87,13 +96,7 @@ const Sidebar = () => {
 						</Stack>
 
 						<Badge
-							color={
-								report.perfRating < 40
-									? "red"
-									: report.perfRating < 60
-										? "yellow"
-										: "green"
-							}
+							color={getRatingColor(report.perfRating)}
 							variant="filled"
 							fw={500}
 						>

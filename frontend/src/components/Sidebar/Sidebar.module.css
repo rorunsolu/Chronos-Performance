@@ -2,6 +2,13 @@
 .gpu {
 	border-bottom: 0 !important;
 	border-left: 0 !important;
+	transition: background-color 150ms ease;
+}
+
+.report:hover,
+.gpu:hover {
+	background-color: var(--mantine-color-gray-0);
+	cursor: pointer;
 }
 
 .report:last-child,
