@@ -194,7 +194,6 @@ const Header = () => {
 										leftSection={<LogOut size={16} />}
 										onClick={async () => {
 											await handleSignOut();
-											navigate("/portal");
 										}}
 									>
 										Logout

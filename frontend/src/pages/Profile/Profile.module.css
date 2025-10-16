@@ -1,0 +1,9 @@
+.avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--mantine-color-gray-3) !important;
+	border-radius: 100%;
+	width: 36px;
+	height: 36px;
+}

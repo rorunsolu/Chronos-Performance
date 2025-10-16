@@ -6,6 +6,12 @@
 		border-color: var(--mantine-color-dark-4); */
 	}
 }
+.fullwidth {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	min-width: 100% !important;
+}
 
 .body {
 	padding-left: 54px;

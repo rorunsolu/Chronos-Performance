@@ -380,6 +380,12 @@ const Game = () => {
 							Start a report
 						</Button>
 
+						{!user && (
+							<Text c="red">
+								You must be logged in to start a report.
+							</Text>
+						)}
+
 						<Collapse in={opened}>
 							<Paper>
 								<form

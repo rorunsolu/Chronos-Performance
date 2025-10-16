@@ -1,5 +1,4 @@
 import "@/App.css";
-import Protected from "@/auth/Protected";
 import Header from "@/components/Header/Header";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Game from "@/pages/Game/Game";
@@ -44,11 +43,7 @@ function App() {
 						/>
 						<Route
 							path="/profile/:accUrlId"
-							element={
-								<Protected>
-									<Profile />
-								</Protected>
-							}
+							element={<Profile />}
 						/>
 						<Route
 							path="/game/:id"
