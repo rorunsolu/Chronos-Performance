@@ -1,8 +1,8 @@
-import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
 import StatCard from "@/components/Card/StatCard";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import styles from "@/pages/Game/Game.module.css";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";

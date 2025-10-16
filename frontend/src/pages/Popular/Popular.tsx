@@ -1,6 +1,6 @@
-import { UserAuth } from "@/auth/AuthContext";
 import GameCard from "@/components/Card/GameCard";
 import EventCarousel from "@/components/Carousel/EventCarousel";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import { Carousel } from "@mantine/carousel";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";

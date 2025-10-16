@@ -1,5 +1,5 @@
-import { UserAuth } from "@/auth/AuthContext";
 import styles from "@/components/Card/GameCard.module.css";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import StarRating from "@/components/Star Rating/StarRating";

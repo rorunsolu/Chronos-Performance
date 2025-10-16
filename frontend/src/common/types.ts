@@ -407,6 +407,17 @@ export type VRAMOptions =
 export type StorageType = "HDD" | "SSD";
 export type HardwareType = "Laptop" | "Desktop";
 
+export type userAccount = {
+	userId: string;
+	accUrlId: string;
+	accEmail: string | null;
+	accCreationDate: Timestamp;
+	accName: string;
+	accPhotoURL: string | null;
+	favorites: number[];
+	reports: string[];
+};
+
 export type PerformanceReport = {
 	id: string; // Firestore document ID
 	userId: string;

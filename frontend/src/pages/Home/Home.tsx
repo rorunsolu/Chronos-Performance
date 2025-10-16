@@ -1,6 +1,6 @@
-import { UserAuth } from "@/auth/AuthContext";
 import GameCard from "@/components/Card/GameCard";
 import SpotlightSearchBar from "@/components/Spotlight/Spotlight";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import { notifications } from "@mantine/notifications";
 import { spotlight } from "@mantine/spotlight";
 import { useInfiniteQuery } from "@tanstack/react-query";

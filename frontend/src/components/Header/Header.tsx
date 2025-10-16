@@ -1,6 +1,6 @@
-import { UserAuth } from "@/auth/AuthContext";
 import ChronosLogo from "@/components/Branding/ChronosLogo";
 import classes from "@/components/Header/Header.module.css";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import cx from "clsx";
 import { useEffect, useState } from "react";
 import {

@@ -1,12 +1,12 @@
-import { UserAuth } from "@/auth/AuthContext";
 import { db } from "@/auth/Firebase";
+import { useGameDetails } from "@/hooks/useGameDetails";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import Error from "@/pages/Error/Error";
 import { doc, getDoc } from "firebase/firestore";
 import { Annoyed, Frown, Meh, Smile } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-//import { useGameDetails } from "@/hooks/useGameDetails";
 import {
 	Anchor,
 	Badge,
@@ -24,11 +24,22 @@ const Report = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { user } = UserAuth();
-	const [report, setReport] =
-		useState<PerformanceReport | null>(null);
+	const [report, setReport] = useState<PerformanceReport>();
 	const [error, setError] = useState<string | null>(null);
 
-	//const { data } = useGameDetails(id);
+	const getRatingColor = (rating: number) => {
+		if (rating > 70) return "green.5";
+		if (rating > 50) return "yellow.5";
+		if (rating > 40) return "orange.5";
+		return "red.7";
+	};
+
+	const getRatingIcon = (rating: number) => {
+		if (rating > 70) return <Smile strokeWidth={2} />;
+		if (rating > 50) return <Meh strokeWidth={2} />;
+		if (rating > 40) return <Frown strokeWidth={2} />;
+		return <Annoyed strokeWidth={2} />;
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -59,26 +70,27 @@ const Report = () => {
 		fetchData();
 	}, [id, user]);
 
-	const getRatingColor = (rating: number) => {
-		if (rating > 70) return "green.5";
-		if (rating > 50) return "yellow.5";
-		if (rating > 40) return "orange.5";
-		return "red.7";
-	};
+	const { data: gameDetails } = useGameDetails(
+		report?.IgdbGameId
+	);
 
-	const getRatingIcon = (rating: number) => {
-		if (rating > 70) return <Smile strokeWidth={2} />;
-		if (rating > 50) return <Meh strokeWidth={2} />;
-		if (rating > 40) return <Frown strokeWidth={2} />;
-		return <Annoyed strokeWidth={2} />;
-	};
+	if (error) {
+		return (
+			<Container>
+				<Stack m="md">
+					<Error errorMsg={error} />
+				</Stack>
+			</Container>
+		);
+	}
 
-	return report ? (
+	return (
 		<Container>
 			<Stack m="md">
 				<Breadcrumbs
 					fw={600}
 					separator="&#8250;"
+					mb="md"
 				>
 					<Anchor
 						onClick={(e) => {
@@ -93,7 +105,7 @@ const Report = () => {
 					<Anchor
 						onClick={(e) => {
 							e.preventDefault();
-							navigate(`/game/${report.IgdbGameId}`);
+							navigate(`/game/${report?.IgdbGameId}`);
 						}}
 						c="black"
 						fw={500}
@@ -102,41 +114,29 @@ const Report = () => {
 					</Anchor>
 				</Breadcrumbs>
 
-				{/* {data && (
+				{gameDetails && gameDetails[0]?.cover?.image_id && (
 					<img
-						src={
-							data[0]?.cover
-								? `https://images.igdb.com/igdb/image/upload/t_cover_big/${data[0].cover.image_id}.jpg`
-								: "https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
-						}
-						alt={`The game cover for ${data[0]?.name}`}
-						className="hidden absolute top-[-20px] left-0 min-w-[100%] max-h-[300px] object-cover z-0 sm:block w-screen"
+						src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`}
+						alt={`The game cover for ${gameDetails[0]?.name}`}
+						className="w-48 h-auto rounded-xs"
 					/>
-				)} */}
+				)}
 
 				<Stack my="md">
-					<Badge
-						fw={500}
-						size="md"
-					>
-						Posted:{" "}
-						{new Date(
-							report.createdAt.seconds * 1000
-						).toLocaleDateString()}
-					</Badge>
-
-					<Paper
-						w="fit-content"
-						p="sm"
-						bdrs="sm"
-						withBorder={false}
-						bg={getRatingColor(report.perfRating)}
-					>
-						<Group gap={10}>
-							{getRatingIcon(report.perfRating)}
-							<Text>{report.perfRating}/100</Text>
-						</Group>
-					</Paper>
+					{report?.perfRating && (
+						<Paper
+							w="fit-content"
+							p="sm"
+							bdrs="sm"
+							withBorder={false}
+							bg={getRatingColor(report.perfRating)}
+						>
+							<Group gap={10}>
+								{getRatingIcon(report?.perfRating)}
+								<Text>{report?.perfRating}/100</Text>
+							</Group>
+						</Paper>
+					)}
 				</Stack>
 
 				<Table
@@ -154,16 +154,16 @@ const Report = () => {
 						<Table.Tr>
 							<Table.Th>Average FPS</Table.Th>
 							<Table.Td>
-								{report.metrics.averageFps}
+								{report?.metrics.averageFps}
 							</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Min FPS</Table.Th>
-							<Table.Td>{report.metrics.minFps}</Table.Td>
+							<Table.Td>{report?.metrics.minFps}</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Max FPS</Table.Th>
-							<Table.Td>{report.metrics.maxFps}</Table.Td>
+							<Table.Td>{report?.metrics.maxFps}</Table.Td>
 						</Table.Tr>
 					</Table.Tbody>
 				</Table>
@@ -182,21 +182,21 @@ const Report = () => {
 						<Table.Tr>
 							<Table.Th>Upscaling</Table.Th>
 							<Table.Td>
-								{report.settings.upscaling ? "Yes" : "No"}
+								{report?.settings.upscaling ? "Yes" : "No"}
 							</Table.Td>
 						</Table.Tr>
-						{report.settings.upscaling && (
+						{report?.settings.upscaling && (
 							<>
 								<Table.Tr>
 									<Table.Th>Upscaling Method</Table.Th>
 									<Table.Td>
-										{report.settings.upscalingMethod}
+										{report?.settings.upscalingMethod}
 									</Table.Td>
 								</Table.Tr>
 								<Table.Tr>
 									<Table.Th>Upscaling Quality</Table.Th>
 									<Table.Td>
-										{report.settings.UpscalingQuality}
+										{report?.settings.UpscalingQuality}
 									</Table.Td>
 								</Table.Tr>
 							</>
@@ -204,19 +204,19 @@ const Report = () => {
 						<Table.Tr>
 							<Table.Th>Resolution</Table.Th>
 							<Table.Td>
-								{report.settings.resolution}
+								{report?.settings.resolution}
 							</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Aspect Ratio</Table.Th>
 							<Table.Td>
-								{report.settings.aspectRatio}
+								{report?.settings.aspectRatio}
 							</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Graphics Preset</Table.Th>
 							<Table.Td>
-								{report.settings.averageGraphicsPreset}
+								{report?.settings.averageGraphicsPreset}
 							</Table.Td>
 						</Table.Tr>
 					</Table.Tbody>
@@ -236,39 +236,49 @@ const Report = () => {
 					<Table.Tbody>
 						<Table.Tr>
 							<Table.Th>CPU</Table.Th>
-							<Table.Td>{report.hardware.cpu}</Table.Td>
+							<Table.Td>{report?.hardware.cpu}</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>GPU</Table.Th>
-							<Table.Td>{report.hardware.gpu}</Table.Td>
+							<Table.Td>{report?.hardware.gpu}</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>RAM</Table.Th>
-							<Table.Td>{report.hardware.ram}</Table.Td>
+							<Table.Td>{report?.hardware.ram}</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>VRAM</Table.Th>
-							<Table.Td>{report.hardware.vram}</Table.Td>
+							<Table.Td>{report?.hardware.vram}</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Storage Type</Table.Th>
 							<Table.Td>
-								{report.hardware.storageType}
+								{report?.hardware.storageType}
 							</Table.Td>
 						</Table.Tr>
 						<Table.Tr>
 							<Table.Th>Hardware Type</Table.Th>
 							<Table.Td>
-								{report.hardware.hardwareType}
+								{report?.hardware.hardwareType}
 							</Table.Td>
 						</Table.Tr>
 					</Table.Tbody>
 				</Table>
+
+				{report?.createdAt && (
+					<Badge
+						fw={500}
+						size="md"
+					>
+						Posted:{" "}
+						{new Date(
+							report?.createdAt.seconds * 1000
+						).toLocaleDateString()}
+					</Badge>
+				)}
 			</Stack>
 		</Container>
-	) : error ? (
-		<Error errorMsg={error} />
-	) : null;
+	);
 };
 
 export default Report;
