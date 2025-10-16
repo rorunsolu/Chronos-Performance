@@ -1,5 +1,6 @@
 import { auth } from "@/auth/Firebase";
 import { db } from "@/auth/Firebase";
+import { AuthContext } from "@/hooks/UserAuthHook";
 import { v4 as uuidv4 } from "uuid";
 import {
 	doc,
@@ -10,16 +11,10 @@ import {
 	collection,
 	getDocs,
 	serverTimestamp,
-	Timestamp,
 	arrayRemove,
 } from "firebase/firestore";
-import {
-	createContext,
-	useContext,
-	useEffect,
-	useState,
-	type ReactNode,
-} from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { type userAccount } from "@/common/types";
 import {
 	GoogleAuthProvider,
 	onAuthStateChanged,
@@ -29,23 +24,7 @@ import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 	type User,
-	type UserCredential,
 } from "firebase/auth";
-
-const AuthContext = createContext<
-	AuthContextType | undefined
->(undefined);
-
-export type userAccount = {
-	userId: string;
-	accUrlId: string;
-	accEmail: string | null;
-	accCreationDate: Timestamp;
-	accName: string;
-	accPhotoURL: string | null;
-	favorites: number[];
-	reports: string[];
-};
 
 export const AuthContextProvider: React.FC<
 	AuthContextProviderProps
@@ -263,42 +242,6 @@ export const AuthContextProvider: React.FC<
 		</AuthContext.Provider>
 	);
 };
-
-export const UserAuth = (): AuthContextType => {
-	const context = useContext(AuthContext);
-
-	if (context === undefined) {
-		throw new Error(
-			"useAuth must be used within an AuthProvider"
-		);
-	}
-	return context;
-};
-
-interface AuthContextType {
-	isGuest: boolean;
-	user: User | null;
-	favorites: number[];
-	allUsers: userAccount[];
-	logOut: () => void;
-	fetchUsers: () => Promise<void>;
-	googleSignIn: () => Promise<UserCredential>;
-	signInAsGuest: () => Promise<UserCredential>;
-	fetchFavorites: (userId: string) => Promise<void>;
-	getUserFavorites: (userId: string) => Promise<number[]>;
-	addFavorite: (
-		gameId: number,
-		userId: string
-	) => Promise<void>;
-	emailSignIn: (
-		email: string,
-		password: string
-	) => Promise<UserCredential>;
-	emailSignUp: (
-		email: string,
-		password: string
-	) => Promise<UserCredential>;
-}
 
 interface AuthContextProviderProps {
 	children: ReactNode;

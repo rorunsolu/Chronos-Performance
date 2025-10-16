@@ -1,6 +1,6 @@
-import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import { FileText, Heart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";

@@ -7,6 +7,7 @@ import Home from "@/pages/Home/Home";
 import Popular from "@/pages/Popular/Popular";
 import Portal from "@/pages/Portal/Portal";
 import Profile from "@/pages/Profile/Profile";
+import Report from "@/pages/Report/Report";
 import "@mantine/carousel/styles.css";
 import { AppShell } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -22,7 +23,7 @@ function App() {
 			<AppShell
 				header={{ height: 56 }}
 				aside={{
-					width: 450,
+					width: 350,
 					breakpoint: "md",
 					collapsed: { desktop: false, mobile: true },
 				}}
@@ -56,6 +57,10 @@ function App() {
 						<Route
 							path="/popular"
 							element={<Popular />}
+						/>
+						<Route
+							path="/report/:id"
+							element={<Report />}
 						/>
 					</Routes>
 				</AppShell.Main>

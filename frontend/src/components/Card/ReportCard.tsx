@@ -1,20 +1,24 @@
-import { UserAuth } from "@/auth/AuthContext";
 import cardStyles from "@/components/Card/ReportCard.module.css";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import dayjs from "dayjs";
-import { ChevronsUpDown, Trash, User } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-	Accordion,
+	ChevronsUpDown,
+	ExternalLink,
+	Trash,
+	User,
+} from "lucide-react";
+import {
 	Button,
-	Divider,
 	Group,
 	Image,
 	Menu,
 	Paper,
 	Progress,
+	Anchor,
 	Stack,
 	Text,
 } from "@mantine/core";
@@ -56,21 +60,10 @@ const ReportCard = ({
 
 	return (
 		<Paper className={cardStyles.comment}>
-			<Group
-				onClick={() => {
-					if (!isProfilePage) {
-						navigate(
-							`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
-						);
-					}
-				}}
-				className={
-					isProfilePage ? "" : "cursor-pointer max-w-fit"
-				}
-			>
+			<Group className={isProfilePage ? "max-w-fit" : ""}>
 				{!isProfilePage && (
 					<Paper
-						radius={100}
+						bdrs="sm"
 						className="overflow-hidden"
 						w={35}
 						h={35}
@@ -85,7 +78,7 @@ const ReportCard = ({
 						) : (
 							<Paper
 								withBorder
-								radius="xl"
+								bdrs="sm"
 								p="xs"
 							>
 								<User size={16} />
@@ -113,6 +106,7 @@ const ReportCard = ({
 									<Text
 										fz="md"
 										fw={500}
+										maw={200}
 									>
 										{report.IgdbGameName}
 									</Text>
@@ -164,35 +158,72 @@ const ReportCard = ({
 							)}
 						</div>
 					) : (
-						<Stack gap="0">
-							<Text fz="sm">
-								{
-									allUsers.find(
-										(userAcc) =>
-											userAcc.userId === report.userId
-									)?.accName
+						<Group
+							justify="space-between"
+							miw="100%"
+							className="min-w-full"
+						>
+							<Stack gap="0">
+								<Anchor
+									fz="sm"
+									c="black"
+									maw={150}
+									onClick={() => {
+										if (!isProfilePage) {
+											navigate(
+												`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
+											);
+										}
+									}}
+								>
+									{
+										allUsers.find(
+											(userAcc) =>
+												userAcc.userId === report.userId
+										)?.accName
+									}
+								</Anchor>
+								<Text
+									fz="xs"
+									c="dimmed"
+								>
+									{dayjs(report.createdAt.toDate()).format(
+										"MMMM D, YYYY"
+									)}
+								</Text>
+							</Stack>
+
+							<Button
+								bdrs="sm"
+								size="xs"
+								px="xs"
+								rightSection={<ExternalLink size={12} />}
+								onClick={() =>
+									navigate(`/report/${report.id}`)
 								}
-							</Text>
-							<Text
-								fz="xs"
-								c="dimmed"
 							>
-								{dayjs(report.createdAt.toDate()).format(
-									"MMMM D, YYYY"
-								)}
-							</Text>
-						</Stack>
+								View Report
+							</Button>
+						</Group>
 					)}
 				</Group>
 			</Group>
 			<Stack gap="1">
-				<Stack gap="5">
+				<Stack
+					gap="5"
+					mt={-10}
+				>
 					<Group
-						align="center"
+						align="flex-end"
 						justify="space-between"
 						mt="md"
 					>
-						<Text fw={500}>Rating</Text>
+						<Text
+							fz="sm"
+							fw={500}
+						>
+							Rating
+						</Text>
 						<div className="flex flex-row gap-1">
 							<Text
 								fz="sm"
@@ -222,20 +253,55 @@ const ReportCard = ({
 				</Stack>
 
 				<Stack
-					gap="5"
+					gap="0"
 					mt="lg"
 					justify="space-between"
 				>
-					{report.metrics.averageFps && (
-						<Group justify="space-between">
-							<Text fz="sm">Average FPS</Text>
+					<Group>
+						{report.hardware.gpu && (
 							<Paper
-								withBorder
-								p="sm"
-								w={30}
-								h={30}
-								className={cardStyles.stat}
+								p="xs"
+								w="fit-content"
+								shadow="0"
+								bdrs="sm"
 							>
+								<Text fz="xs">GPU</Text>
+
+								<Text
+									fz="sm"
+									fw={500}
+								>
+									{report.hardware.gpu}
+								</Text>
+							</Paper>
+						)}
+						{report.hardware.cpu && (
+							<Paper
+								p="xs"
+								w="fit-content"
+								shadow="0"
+								bdrs="sm"
+							>
+								<Text fz="xs">CPU</Text>
+
+								<Text
+									fz="sm"
+									fw={500}
+								>
+									{report.hardware.cpu}
+								</Text>
+							</Paper>
+						)}
+
+						{report.metrics.averageFps && (
+							<Paper
+								p="xs"
+								w="fit-content"
+								shadow="0"
+								bdrs="sm"
+							>
+								<Text fz="xs">Avg FPS</Text>
+
 								<Text
 									fz="sm"
 									fw={500}
@@ -243,164 +309,9 @@ const ReportCard = ({
 									{report.metrics.averageFps}
 								</Text>
 							</Paper>
-						</Group>
-					)}
-
-					{report.metrics.minFps && (
-						<Group justify="space-between">
-							<Text fz="sm">Minimum FPS</Text>
-							<Paper
-								withBorder
-								p="sm"
-								w={30}
-								h={30}
-								className={cardStyles.stat}
-							>
-								<Text
-									fz="sm"
-									fw={500}
-								>
-									{report.metrics.minFps}
-								</Text>
-							</Paper>
-						</Group>
-					)}
-
-					{report.metrics.maxFps && (
-						<Group justify="space-between">
-							<Text fz="sm">Maximum FPS</Text>
-							<Paper
-								withBorder
-								p="sm"
-								w={30}
-								h={30}
-								className={cardStyles.stat}
-							>
-								<Text
-									fz="sm"
-									fw={500}
-								>
-									{report.metrics.maxFps}
-								</Text>
-							</Paper>
-						</Group>
-					)}
+						)}
+					</Group>
 				</Stack>
-
-				<Accordion
-					onClick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Accordion.Item
-						value="viewmore"
-						className={cardStyles.accordion}
-					>
-						<Accordion.Control
-							mt="lg"
-							bdrs="sm"
-							className={cardStyles.control}
-						></Accordion.Control>
-						<Accordion.Panel>
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Settings"
-									labelPosition="center"
-									color="gray.4"
-								/>
-								<Group gap="5">
-									<Text fz="sm">Upscaling:</Text>
-									<Text fz="sm">
-										{report.settings.upscaling
-											? "Enabled"
-											: "Disabled"}
-									</Text>
-								</Group>
-								{report.settings.upscalingMethod && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Method:</Text>
-										<Text fz="sm">
-											{report.settings.upscalingMethod}
-										</Text>
-									</Group>
-								)}
-								{report.settings.UpscalingQuality && (
-									<Group gap="5">
-										<Text fz="sm">Upscaling Quality:</Text>
-										<Text fz="sm">
-											{report.settings.UpscalingQuality}
-										</Text>
-									</Group>
-								)}
-								<Group gap="5">
-									<Text fz="sm">Aspect Ratio:</Text>
-									<Text fz="sm">
-										{report.settings.aspectRatio}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Resolution:</Text>
-									<Text fz="sm">
-										{report.settings.resolution}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Graphics Preset:</Text>
-									<Text fz="sm">
-										{report.settings.averageGraphicsPreset}
-									</Text>
-								</Group>
-							</Stack>
-
-							<Stack
-								gap="5"
-								mt="5"
-							>
-								<Divider
-									my="xs"
-									label="Hardware"
-									labelPosition="center"
-									color="gray.4"
-								/>
-
-								<Group gap="5">
-									<Text fz="sm">CPU:</Text>
-									<Text fz="sm">{report.hardware.cpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">GPU:</Text>
-									<Text fz="sm">{report.hardware.gpu}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">RAM:</Text>
-									<Text fz="sm">{report.hardware.ram}</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">VRAM:</Text>
-									<Text fz="sm">
-										{report.hardware.vram}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Storage Type:</Text>
-									<Text fz="sm">
-										{report.hardware.storageType}
-									</Text>
-								</Group>
-								<Group gap="5">
-									<Text fz="sm">Hardware Type:</Text>
-									<Text fz="sm">
-										{report.hardware.hardwareType}
-									</Text>
-								</Group>
-							</Stack>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
 			</Stack>
 		</Paper>
 	);

@@ -2,7 +2,9 @@ import styles from "@/components/Sidebar/Sidebar.module.css";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+	Divider,
 	Badge,
 	Group,
 	Paper,
@@ -17,8 +19,7 @@ import {
 const Sidebar = () => {
 	const { reports, fetchReports } =
 		usePerformanceReportHook();
-	const top5Gpus = getReportedGpus(reports);
-	const recentReports = get10MostRecentReports(reports);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -28,10 +29,22 @@ const Sidebar = () => {
 		fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+	const top5Gpus = getReportedGpus(reports);
+	const recentReports = get10MostRecentReports(reports);
 
+	const getRatingColor = (rating: number) => {
+		if (rating > 70) return "green.5";
+		if (rating > 50) return "yellow.5";
+		if (rating > 40) return "orange.5";
+		return "red.7";
+	};
 	return (
 		<Stack gap="0">
-			<Stack m="md">
+			<Stack
+				mx="md"
+				mt="md"
+				mb="xs"
+			>
 				<Text
 					fw={600}
 					size="md"
@@ -40,19 +53,29 @@ const Sidebar = () => {
 				</Text>
 			</Stack>
 
-			{top5Gpus.map((gpu, index) => (
-				<Paper
-					key={index}
-					p="xs"
-					shadow="0"
-					bdrs={0}
-					className={styles.gpu}
-				>
-					{index + 1}. {gpu}
-				</Paper>
-			))}
+			<Stack
+				p="xs"
+				gap="xs"
+			>
+				{top5Gpus.map((gpu, index) => (
+					<Paper
+						key={index}
+						p="xs"
+						bdrs="sm"
+						className={styles.gpu}
+					>
+						{gpu}
+					</Paper>
+				))}
+			</Stack>
 
-			<Stack m="md">
+			<Divider mt="sm" />
+
+			<Stack
+				mx="md"
+				mt="md"
+				mb="xs"
+			>
 				<Text
 					fw={600}
 					size="md"
@@ -61,47 +84,46 @@ const Sidebar = () => {
 				</Text>
 			</Stack>
 
-			{recentReports.map((report, index) => (
-				<Paper
-					key={index}
-					p="xs"
-					shadow="0"
-					bdrs={0}
-					className={styles.report}
-				>
-					<Group justify="space-between">
-						<Stack gap={0}>
-							<Text
-								size="sm"
-								c="dimmed"
+			<Stack
+				p="xs"
+				gap="xs"
+			>
+				{recentReports.map((report, index) => (
+					<Paper
+						key={index}
+						p="xs"
+						bdrs="sm"
+						className={styles.report}
+						onClick={() => navigate(`/report/${report.id}`)}
+					>
+						<Group justify="space-between">
+							<Stack gap={0}>
+								<Text
+									size="xs"
+									c="dimmed"
+								>
+									{report.createdAt
+										? formatDistanceToNow(
+												report.createdAt.toDate(),
+												{ addSuffix: true }
+											)
+										: "Unknown date"}
+								</Text>
+
+								<Text truncate>{report.IgdbGameName}</Text>
+							</Stack>
+
+							<Badge
+								color={getRatingColor(report.perfRating)}
+								variant="light"
+								fw={500}
 							>
-								{report.createdAt
-									? formatDistanceToNow(
-											report.createdAt.toDate(),
-											{ addSuffix: true }
-										)
-									: "Unknown date"}
-							</Text>
-
-							<Text truncate>{report.IgdbGameName}</Text>
-						</Stack>
-
-						<Badge
-							color={
-								report.perfRating < 40
-									? "red"
-									: report.perfRating < 60
-										? "yellow"
-										: "green"
-							}
-							variant="filled"
-							fw={500}
-						>
-							{report.perfRating} / 100
-						</Badge>
-					</Group>
-				</Paper>
-			))}
+								{report.perfRating} / 100
+							</Badge>
+						</Group>
+					</Paper>
+				))}
+			</Stack>
 		</Stack>
 	);
 };

@@ -1,4 +1,4 @@
-import { UserAuth } from "@/auth/AuthContext";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import { Navigate } from "react-router-dom";
 import { type ReactNode } from "react";
 

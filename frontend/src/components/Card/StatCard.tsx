@@ -6,12 +6,14 @@ const StatCard = ({
 	title,
 	about,
 	avgPerfRating,
+	avgRandomGpuFps,
 	diff,
 }: {
 	title: string;
 	about: string;
-	avgPerfRating: number | null;
-	diff: number | null;
+	avgPerfRating?: number | null;
+	avgRandomGpuFps?: number | null;
+	diff?: number | null;
 }) => {
 	const stat = {
 		title,
@@ -42,23 +44,36 @@ const StatCard = ({
 			<Group
 				align="flex-end"
 				gap="xs"
-				mt={25}
+				mt="xs"
 			>
-				<Text className={classes.value}>
-					{avgPerfRating}
-				</Text>
-				<Text
-					c={stat.diff > 0 ? "teal" : "red"}
-					fz="sm"
-					fw={500}
-					className={classes.diff}
-				>
-					<span>{stat.diff}%</span>
-					<DiffIcon
-						size={16}
-						strokeWidth={1.5}
-					/>
-				</Text>
+				{avgPerfRating && (
+					<Text className={classes.value}>
+						{avgPerfRating}
+					</Text>
+				)}
+
+				{avgRandomGpuFps && (
+					<Text className={classes.value}>
+						{avgRandomGpuFps} fps
+					</Text>
+				)}
+
+				{stat.diff !== null && stat.diff !== undefined && (
+					<Text
+						c={stat.diff > 0 ? "teal" : "red"}
+						fz="sm"
+						fw={500}
+						className={classes.diff}
+						mb={2}
+					>
+						<span>{stat.diff}%</span>
+						<DiffIcon
+							className="mt-0.5"
+							size={16}
+							strokeWidth={2}
+						/>
+					</Text>
+				)}
 			</Group>
 
 			<Text

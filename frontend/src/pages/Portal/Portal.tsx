@@ -1,6 +1,6 @@
-import { UserAuth } from "@/auth/AuthContext";
 import ChronosLogo from "@/components/Branding/ChronosLogo";
 import { GoogleButton } from "@/components/Button/GoogleButton";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import styles from "@/pages/Portal/Portal.module.css";
 import { isEmail, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";

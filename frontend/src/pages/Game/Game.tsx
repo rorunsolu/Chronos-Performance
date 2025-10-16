@@ -1,8 +1,8 @@
-import { UserAuth } from "@/auth/AuthContext";
 import ReportCard from "@/components/Card/ReportCard";
 import StatCard from "@/components/Card/StatCard";
 import { useGameDetails } from "@/hooks/useGameDetails";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
+import { UserAuth } from "@/hooks/UserAuthHook";
 import styles from "@/pages/Game/Game.module.css";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
@@ -70,7 +70,7 @@ import {
 	GPUs,
 	CPUs,
 	UpscalingQualitys,
-} from "../../common";
+} from "@/common/types";
 
 const Game = () => {
 	const { id } = useParams<{ id: string }>();
@@ -359,14 +359,15 @@ const Game = () => {
 										diff={perfRatingDiff}
 									/>
 								)}
+							{randomGpuName !== null &&
+								randomGpuAvgFps !== null && (
+									<StatCard
+										title="Avg GPU FPS"
+										about={`Average FPS for the ${randomGpuName} when running this game`}
+										avgRandomGpuFps={randomGpuAvgFps}
+									/>
+								)}
 						</SimpleGrid>
-
-						{randomGpuName && randomGpuAvgFps !== null && (
-							<Text>
-								Users with a {randomGpuName} are averaging{" "}
-								{randomGpuAvgFps} fps
-							</Text>
-						)}
 
 						<Button
 							mt="5"
@@ -633,7 +634,10 @@ const Game = () => {
 									No reports yet. Be the first!
 								</Text>
 							) : (
-								<div className={styles.grid}>
+								<SimpleGrid
+									cols={{ base: 1, sm: 2 }}
+									spacing="md"
+								>
 									{gameSpecificReports.map(
 										(report: PerformanceReport) => (
 											<ReportCard
@@ -642,7 +646,7 @@ const Game = () => {
 											/>
 										)
 									)}
-								</div>
+								</SimpleGrid>
 							)}
 						</Stack>
 					</Stack>
