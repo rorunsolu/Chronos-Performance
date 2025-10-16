@@ -60,7 +60,7 @@ const ReportCard = ({
 
 	return (
 		<Paper className={cardStyles.comment}>
-			<Group className={isProfilePage ? "max-w-fit" : ""}>
+			<Group className={isProfilePage ? "" : ""}>
 				{!isProfilePage && (
 					<Paper
 						bdrs="sm"
@@ -74,6 +74,8 @@ const ReportCard = ({
 								src={authorAvatar}
 								content="no-referrer"
 								referrerPolicy="no-referrer"
+								w="100%"
+								h="100%"
 							/>
 						) : (
 							<Paper
@@ -87,10 +89,10 @@ const ReportCard = ({
 					</Paper>
 				)}
 
-				<Group w={isProfilePage ? "100%" : "auto"}>
+				<Group w={isProfilePage ? "100%" : "100%"}>
 					{isProfilePage ? (
 						<div className="w-full flex justify-between items-center">
-							<Group>
+							<Group w="100%">
 								<img
 									src={
 										gameDetails && gameDetails[0]?.cover
@@ -104,9 +106,16 @@ const ReportCard = ({
 								/>
 								<Stack gap="0">
 									<Text
+										onClick={() => {
+											navigate(
+												`/game/${report.IgdbGameId}`
+											);
+										}}
 										fz="md"
 										fw={500}
 										maw={200}
+										c="black"
+										style={{ cursor: "pointer" }}
 									>
 										{report.IgdbGameName}
 									</Text>
@@ -158,31 +167,28 @@ const ReportCard = ({
 							)}
 						</div>
 					) : (
-						<Group
-							justify="space-between"
-							miw="100%"
-							className="min-w-full"
-						>
+						<div className={cardStyles.fullwidth}>
 							<Stack gap="0">
-								<Anchor
-									fz="sm"
-									c="black"
-									maw={150}
-									onClick={() => {
-										if (!isProfilePage) {
+								{!isProfilePage && (
+									<Anchor
+										fz="sm"
+										c="black"
+										maw={150}
+										onClick={() => {
 											navigate(
 												`/profile/${allUsers.find((userAcc) => userAcc.userId === report.userId)?.accUrlId}`
 											);
+										}}
+									>
+										{
+											allUsers.find(
+												(userAcc) =>
+													userAcc.userId === report.userId
+											)?.accName
 										}
-									}}
-								>
-									{
-										allUsers.find(
-											(userAcc) =>
-												userAcc.userId === report.userId
-										)?.accName
-									}
-								</Anchor>
+									</Anchor>
+								)}
+
 								<Text
 									fz="xs"
 									c="dimmed"
@@ -197,6 +203,7 @@ const ReportCard = ({
 								bdrs="sm"
 								size="xs"
 								px="xs"
+								w="full"
 								rightSection={<ExternalLink size={12} />}
 								onClick={() =>
 									navigate(`/report/${report.id}`)
@@ -204,7 +211,7 @@ const ReportCard = ({
 							>
 								View Report
 							</Button>
-						</Group>
+						</div>
 					)}
 				</Group>
 			</Group>

@@ -6,8 +6,7 @@
 	transition: background-color 150ms ease;
 }
 
-.report:hover,
-.gpu:hover {
+.report:hover {
 	background-color: var(--mantine-color-gray-0);
 	cursor: pointer;
 }
@@ -19,4 +18,16 @@
 
 .gpu:last-child {
 	border-bottom: 1px solid var(--mantine-color-gray-3) !important;
+}
+
+.order {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--mantine-color-gray-3) !important;
+	border-radius: 100%;
+	width: 24px;
+	height: 24px;
+	font-size: 12px;
+	font-weight: 500;
 }

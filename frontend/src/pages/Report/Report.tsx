@@ -1,6 +1,5 @@
 import { db } from "@/auth/Firebase";
 import { useGameDetails } from "@/hooks/useGameDetails";
-import { UserAuth } from "@/hooks/UserAuthHook";
 import Error from "@/pages/Error/Error";
 import { doc, getDoc } from "firebase/firestore";
 import { Annoyed, Frown, Meh, Smile } from "lucide-react";
@@ -23,9 +22,10 @@ import { type PerformanceReport } from "@/common/types";
 const Report = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { user } = UserAuth();
+
 	const [report, setReport] = useState<PerformanceReport>();
 	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
 
 	const getRatingColor = (rating: number) => {
 		if (rating > 70) return "green.5";
@@ -45,9 +45,7 @@ const Report = () => {
 		const fetchData = async () => {
 			try {
 				if (!id) {
-					return;
-				}
-				if (!user) {
+					setLoading(false);
 					return;
 				}
 
@@ -56,19 +54,22 @@ const Report = () => {
 
 				if (!docSnapshot.exists()) {
 					setError("Report not found");
+					setLoading(false);
 					return;
 				}
 
 				const reportData =
 					docSnapshot.data() as PerformanceReport;
 				setReport(reportData);
+				setLoading(false);
 			} catch {
+				setLoading(false);
 				setError("Failed to fetch report data");
 				return;
 			}
 		};
 		fetchData();
-	}, [id, user]);
+	}, [id]);
 
 	const { data: gameDetails } = useGameDetails(
 		report?.IgdbGameId
@@ -79,6 +80,16 @@ const Report = () => {
 			<Container>
 				<Stack m="md">
 					<Error errorMsg={error} />
+				</Stack>
+			</Container>
+		);
+	}
+
+	if (loading) {
+		return (
+			<Container>
+				<Stack m="md">
+					<Text>Loading report...</Text>
 				</Stack>
 			</Container>
 		);
@@ -114,13 +125,15 @@ const Report = () => {
 					</Anchor>
 				</Breadcrumbs>
 
-				{gameDetails && gameDetails[0]?.cover?.image_id && (
-					<img
-						src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`}
-						alt={`The game cover for ${gameDetails[0]?.name}`}
-						className="w-48 h-auto rounded-xs"
-					/>
-				)}
+				{gameDetails &&
+					gameDetails[0]?.cover?.image_id &&
+					loading === false && (
+						<img
+							src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${gameDetails[0].cover.image_id}.jpg`}
+							alt={`The game cover for ${gameDetails[0]?.name}`}
+							className="w-48 h-auto rounded-xs"
+						/>
+					)}
 
 				<Stack my="md">
 					{report?.perfRating && (

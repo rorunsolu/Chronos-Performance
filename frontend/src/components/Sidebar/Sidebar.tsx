@@ -64,7 +64,12 @@ const Sidebar = () => {
 						bdrs="sm"
 						className={styles.gpu}
 					>
-						{gpu}
+						<Group>
+							<div className={styles.order}>
+								<p>{index + 1}</p>
+							</div>{" "}
+							{gpu}
+						</Group>
 					</Paper>
 				))}
 			</Stack>

@@ -279,17 +279,35 @@ const Popular = () => {
 		>
 			<Stack>
 				<Stack mb="lg">
-					<Text
-						fw={600}
-						size="xl"
+					<Stack
+						gap={8}
+						mb={8}
 					>
-						Events
-					</Text>
+						<Text
+							fw={600}
+							size="xl"
+						>
+							Upcoming Events
+						</Text>
+						<div className="w-20 min-h-1 bg-teal-500"></div>
+					</Stack>
+
 					<EventCarousel />
 				</Stack>
 
 				<Stack>
-					<Text fw={600}>Most Positive Reviews</Text>
+					<Stack
+						gap={8}
+						mb={8}
+					>
+						<Text
+							fw={600}
+							size="xl"
+						>
+							Best Reviews
+						</Text>
+						<div className="w-20 min-h-1 bg-teal-500"></div>
+					</Stack>
 
 					<Carousel
 						type="container"
@@ -324,8 +342,19 @@ const Popular = () => {
 					</Carousel>
 				</Stack>
 
-				<Stack>
-					<Text fw={600}>Top 24hr Peak Players</Text>
+				<Stack mt="lg">
+					<Stack
+						gap={8}
+						mb={8}
+					>
+						<Text
+							fw={600}
+							size="xl"
+						>
+							Top 24hr Peak Players
+						</Text>
+						<div className="w-20 min-h-1 bg-teal-500"></div>
+					</Stack>
 
 					<Carousel
 						type="container"
@@ -360,8 +389,19 @@ const Popular = () => {
 					</Carousel>
 				</Stack>
 
-				<Stack>
-					<Text fw={600}>Most Played</Text>
+				<Stack mt="lg">
+					<Stack
+						gap={8}
+						mb={8}
+					>
+						<Text
+							fw={600}
+							size="xl"
+						>
+							Most Played
+						</Text>
+						<div className="w-20 min-h-1 bg-teal-500"></div>
+					</Stack>
 
 					<Carousel
 						type="container"

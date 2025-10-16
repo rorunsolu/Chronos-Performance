@@ -1,6 +1,7 @@
 import ReportCard from "@/components/Card/ReportCard";
 import { usePerformanceReportHook } from "@/hooks/usePerformanceReportHook";
 import { UserAuth } from "@/hooks/UserAuthHook";
+import styles from "@/pages/Profile/Profile.module.css";
 import { FileText, Heart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -97,15 +98,9 @@ const Profile = () => {
 						/>
 					</Paper>
 				) : (
-					<Paper
-						radius={100}
-						className="overflow-hidden"
-						w={35}
-						h={35}
-						p={0}
-					>
-						<User />
-					</Paper>
+					<div className={styles.avatar}>
+						<User size={20} />
+					</div>
 				)}
 
 				<div>

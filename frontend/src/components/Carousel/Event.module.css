@@ -11,6 +11,10 @@
 	cursor: pointer;
 }
 
+.carousel {
+	border-radius: var(--mantine-radius-md) !important;
+}
+
 .card::before {
 	content: "";
 	position: absolute;
