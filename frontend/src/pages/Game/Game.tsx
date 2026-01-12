@@ -11,12 +11,10 @@ import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import {
-	getAvgGamePerfRating,
-	getAvgPerfRatingForOtherGames,
-	getRandomGpuAverageFps,
-	getRandomGpuName,
-} from "@/hooks/statisticsHook";
+import { getAvgGamePerfRating } from "@/utils/getAvgGamePerfRating";
+import { getRandomGpuAverageFps } from "@/utils/getRandomGpuAverageFps";
+import { getAvgPerfRatingForOtherGames } from "@/utils/getAvgPerfRatingForOtherGames";
+import { getRandomGpuName } from "@/utils/getRandomGpuName";
 import {
 	Badge,
 	Button,
@@ -329,7 +327,11 @@ const Game = () => {
 												{game.genres.map((g) => (
 													<Badge
 														key={g.name}
-														className={styles.badge}
+														// className={styles.badge}
+														classNames={{
+															root: styles.badge,
+														}}
+														//bg="black"
 													>
 														{g.name}
 													</Badge>
@@ -401,6 +403,8 @@ const Game = () => {
 											)}
 											label="Upscaling Enabled?"
 											defaultChecked={false}
+											c="white"
+											color="teal"
 										/>
 										<Fieldset
 											disabled={
@@ -410,7 +414,6 @@ const Game = () => {
 												!form.values.settings.upscaling
 											}
 											legend="Upscaling"
-											variant="unstyled"
 										>
 											<Stack>
 												<Select
@@ -437,10 +440,7 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
-										<Fieldset
-											legend="Performance Metrics"
-											variant="unstyled"
-										>
+										<Fieldset legend="Performance Metrics">
 											<Stack>
 												<NumberInput
 													{...form.getInputProps(
@@ -481,10 +481,7 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
-										<Fieldset
-											legend="Settings"
-											variant="unstyled"
-										>
+										<Fieldset legend="Settings">
 											<Stack>
 												<Select
 													{...form.getInputProps(
@@ -496,6 +493,8 @@ const Game = () => {
 													clearable
 													checkIconPosition="right"
 													withAsterisk
+													bg="black"
+													c="white"
 												/>
 												<Select
 													{...form.getInputProps(
@@ -521,10 +520,7 @@ const Game = () => {
 												/>
 											</Stack>
 										</Fieldset>
-										<Fieldset
-											legend="Hardware"
-											variant="unstyled"
-										>
+										<Fieldset legend="Hardware">
 											<Stack>
 												<Select
 													{...form.getInputProps(
@@ -598,8 +594,8 @@ const Game = () => {
 										</Fieldset>
 										<Fieldset
 											legend="Overall Performance Rating"
-											variant="unstyled"
 											mb="md"
+											color="teal"
 										>
 											<Slider
 												{...form.getInputProps(

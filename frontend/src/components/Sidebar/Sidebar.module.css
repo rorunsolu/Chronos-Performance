@@ -1,31 +1,18 @@
 .report {
-	transition: background-color 150ms ease;
-}
+	transition: var(--transition);
 
-.gpu {
-	transition: background-color 150ms ease;
-}
-
-.report:hover {
-	background-color: var(--mantine-color-gray-0);
-	cursor: pointer;
-}
-
-.report:last-child,
-.gpu:last-child {
-	border-bottom: 1px solid var(--mantine-color-gray-3) !important;
-}
-
-.gpu:last-child {
-	border-bottom: 1px solid var(--mantine-color-gray-3) !important;
+	&:hover {
+		background: var(--hover-bg);
+		cursor: pointer;
+	}
 }
 
 .order {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid var(--mantine-color-gray-3) !important;
-	border-radius: 100%;
+	border: 1px solid var(--mantine-color-dark-6);
+	border-radius: var(--mantine-radius-xs);
 	width: 24px;
 	height: 24px;
 	font-size: 12px;

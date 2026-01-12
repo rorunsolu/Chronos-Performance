@@ -50,7 +50,8 @@ const GameCard = ({
 				)
 			}
 			p={0}
-			className={` ${isOnPopularPage ? styles.card : "cursor-pointer relative"} `}
+			className={` ${isOnPopularPage ? styles.card : styles.cardHome}`}
+			withBorder={false}
 		>
 			<Card.Section className="relative">
 				<Image
@@ -61,6 +62,7 @@ const GameCard = ({
 					}
 					alt={`Image of ${game.name}`}
 					fallbackSrc="https://nftcalendar.io/storage/uploads/2022/02/21/image-not-found_0221202211372462137974b6c1a.png"
+					className={styles.image}
 				/>
 				<Button
 					variant="light"
@@ -69,6 +71,11 @@ const GameCard = ({
 					bdrs="100"
 					p="0"
 					bd="80"
+					bg={
+						isFavorited
+							? "transparent"
+							: "rgba(0, 0, 0, 0.4)"
+					}
 					onClick={(e) => {
 						e.stopPropagation();
 						handleFavourite(
@@ -89,6 +96,7 @@ const GameCard = ({
 			<Group
 				justify="space-between"
 				p="sm"
+				display={"none"}
 			>
 				<Text
 					fw={500}

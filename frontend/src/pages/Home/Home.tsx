@@ -1,6 +1,7 @@
 import GameCard from "@/components/Card/GameCard";
 import SpotlightSearchBar from "@/components/Spotlight/Spotlight";
 import { UserAuth } from "@/hooks/UserAuthHook";
+import styles from "@/pages/Home/Home.module.css";
 import { notifications } from "@mantine/notifications";
 import { spotlight } from "@mantine/spotlight";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -89,7 +90,7 @@ const Home = () => {
 
 	return status === "success" ? (
 		<Container
-			size="lg"
+			size="xl"
 			my="sm"
 			px="sm"
 		>
@@ -110,7 +111,7 @@ const Home = () => {
 
 				{data.pages.map((results, i) => (
 					<SimpleGrid
-						cols={{ base: 1, xs: 2, sm: 4, md: 4, lg: 4 }}
+						cols={{ base: 1, xs: 2, sm: 4, md: 4, lg: 5 }}
 						mb="lg"
 						key={i}
 					>
@@ -130,6 +131,11 @@ const Home = () => {
 					onClick={() => fetchNextPage()}
 					disabled={!hasNextPage || isFetching}
 					loading={isFetchingNextPage}
+					bg="black"
+					c="white"
+					classNames={{
+						root: styles.root,
+					}}
 				>
 					{isFetchingNextPage
 						? ""
@@ -141,7 +147,7 @@ const Home = () => {
 		</Container>
 	) : status === "error" ? (
 		<Container
-			size="lg"
+			size="xl"
 			my="sm"
 			px="sm"
 		>
@@ -149,7 +155,7 @@ const Home = () => {
 		</Container>
 	) : (
 		<Container
-			size="lg"
+			size="xl"
 			my="sm"
 			px="sm"
 		>

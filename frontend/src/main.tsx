@@ -10,6 +10,7 @@ import {
 	Button,
 	ColorSchemeScript,
 	createTheme,
+	Fieldset,
 	MantineProvider,
 	Paper,
 } from "@mantine/core";
@@ -34,9 +35,16 @@ const theme = createTheme({
 				bdrs: "md",
 			},
 		}),
+		Fieldset: Fieldset.extend({
+			defaultProps: {
+				variant: "unstyled",
+				bdrs: "md",
+				c: "white",
+			},
+		}),
 		Badge: Badge.extend({
 			defaultProps: {
-				variant: "default",
+				//variant: "default",
 				bdrs: "sm",
 				size: "md",
 			},
@@ -60,7 +68,7 @@ if (!rootElement.innerHTML) {
 				<QueryClientProvider client={queryClient}>
 					<AuthContextProvider>
 						<PerformanceReportProvider>
-							<ColorSchemeScript defaultColorScheme="light" />
+							<ColorSchemeScript defaultColorScheme="dark" />
 							<MantineProvider theme={theme}>
 								<App />
 							</MantineProvider>

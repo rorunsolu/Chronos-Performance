@@ -5,6 +5,21 @@ body {
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
+	/* background: #09002b;
+	background: linear-gradient(
+		90deg,
+		rgba(9, 0, 43, 1) 0%,
+		rgba(7, 0, 61, 1) 35%,
+		rgba(18, 6, 87, 1) 100%
+	); */
+	background: hsl(0, 0%, 3%) !important;
+}
+
+:root {
+	--hover-bg: hsl(0, 0%, 5%);
+	--hover-bd: hsl(0, 0%, 50%);
+	--focus-bd: hsl(0, 0%, 60%);
+	--transition: 0.2s ease-in-out;
 }
 
 .m_4ba554d4.mantine-Accordion-content {
@@ -19,4 +34,101 @@ body {
 	svg {
 		stroke: white !important;
 	}
+}
+
+.mantine-Badge-root,
+.mantine-Paper-root,
+.mantine-Button-root {
+	background: hsl(0, 0%, 0%);
+	border: 1px solid var(--mantine-color-dark-6);
+}
+
+.mantine-Text-root,
+.mantine-Title-root,
+.mantine-Button-root {
+	color: hsl(0, 0%, 100%);
+}
+
+.mantine-Button-root {
+	&:hover {
+		color: hsl(0, 0%, 100%);
+		background: var(--hover-bg);
+	}
+}
+
+.mantine-Select-dropdown {
+	background: hsl(0, 0%, 0%);
+	border: 1px solid var(--mantine-color-dark-6);
+}
+
+.mantine-Select-options {
+	color: hsl(0, 0%, 100%);
+	background: hsl(0, 0%, 0%);
+
+	.mantine-Select-option {
+		&:hover {
+			background: var(--hover-bg);
+		}
+	}
+}
+
+.mantine-TextInput-wrapper .mantine-TextInput-input,
+.mantine-NumberInput-wrapper .mantine-NumberInput-input,
+.mantine-Select-wrapper .mantine-Select-input {
+	background: hsl(0, 0%, 0%);
+	color: hsl(0, 0%, 100%);
+	border: 1px solid var(--mantine-color-dark-6);
+
+	&::placeholder {
+		color: hsl(0, 0%, 50%);
+	}
+
+	&:focus-within {
+		border-color: var(--focus-bd);
+		box-shadow:
+			0 0 0 1px #ffffff82,
+			0px 0px 0px 3px #ffffff3d;
+	}
+
+	&:hover:not(:focus) {
+		border-color: var(--hover-bd);
+	}
+
+	&:disabled {
+		background: var(--mantine-color-dark-5);
+		color: var(--mantine-color-dark-3);
+	}
+}
+
+.mantine-AppShell-aside {
+	background: hsl(0, 0%, 0%);
+	border-left: 1px solid var(--mantine-color-dark-6);
+}
+
+.mantine-AppShell-header {
+	background: hsl(0, 0%, 0%);
+	border-bottom: 1px solid var(--mantine-color-dark-6);
+}
+
+.mantine-Menu-dropdown {
+	background: hsl(0, 0%, 0%);
+
+	border: 1px solid var(--mantine-color-dark-6) !important;
+
+	.mantine-Menu-item {
+		color: hsl(0, 0%, 100%);
+		&:hover {
+			background: var(--hover-bg);
+		}
+	}
+}
+.mantine-Menu-arrow {
+	border: 1px solid var(--mantine-color-dark-6) !important;
+}
+
+.mantine-Table-tr,
+.mantine-Table-th {
+	background: hsl(0, 0%, 0%) !important;
+	border: 1px solid var(--mantine-color-dark-6);
+	color: hsl(0, 0%, 100%);
 }

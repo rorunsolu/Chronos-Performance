@@ -35,10 +35,33 @@ const Report = () => {
 	};
 
 	const getRatingIcon = (rating: number) => {
-		if (rating > 70) return <Smile strokeWidth={2} />;
-		if (rating > 50) return <Meh strokeWidth={2} />;
-		if (rating > 40) return <Frown strokeWidth={2} />;
-		return <Annoyed strokeWidth={2} />;
+		if (rating > 70)
+			return (
+				<Smile
+					color="white"
+					strokeWidth={2}
+				/>
+			);
+		if (rating > 50)
+			return (
+				<Meh
+					color="white"
+					strokeWidth={2}
+				/>
+			);
+		if (rating > 40)
+			return (
+				<Frown
+					color="white"
+					strokeWidth={2}
+				/>
+			);
+		return (
+			<Annoyed
+				color="white"
+				strokeWidth={2}
+			/>
+		);
 	};
 
 	useEffect(() => {

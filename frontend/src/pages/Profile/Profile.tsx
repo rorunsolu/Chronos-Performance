@@ -134,7 +134,10 @@ const Profile = () => {
 					withBorder
 				>
 					<Group>
-						<FileText size={24} />
+						<FileText
+							color="white"
+							size={24}
+						/>
 						<Stack gap="0">
 							<Text fw={600}>
 								{userSpecificReports.length}
@@ -153,7 +156,10 @@ const Profile = () => {
 					withBorder
 				>
 					<Group>
-						<Heart size={24} />
+						<Heart
+							size={24}
+							color="white"
+						/>
 						<Stack gap="0">
 							<Text fw={600}>
 								{profileFavorites.length}

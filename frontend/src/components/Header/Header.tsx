@@ -82,7 +82,7 @@ const Header = () => {
 			<Text
 				fw={500}
 				size="sm"
-				c={active === link.link ? "teal" : "black"}
+				c={active === link.link ? "teal" : "white"}
 				className={cx(classes.link, {
 					[classes.linkActive]: active === link.link,
 				})}

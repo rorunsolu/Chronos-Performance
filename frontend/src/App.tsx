@@ -1,4 +1,3 @@
-import "@/App.css";
 import Header from "@/components/Header/Header";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Game from "@/pages/Game/Game";
@@ -14,6 +13,7 @@ import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import "@mantine/spotlight/styles.css";
 import { Route, Routes } from "react-router-dom";
+import "@/App.css";
 
 function App() {
 	return (

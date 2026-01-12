@@ -172,7 +172,6 @@ const ReportCard = ({
 								{!isProfilePage && (
 									<Anchor
 										fz="sm"
-										c="black"
 										maw={150}
 										onClick={() => {
 											navigate(
@@ -189,10 +188,7 @@ const ReportCard = ({
 									</Anchor>
 								)}
 
-								<Text
-									fz="xs"
-									c="dimmed"
-								>
+								<Text fz="xs">
 									{dayjs(report.createdAt.toDate()).format(
 										"MMMM D, YYYY"
 									)}

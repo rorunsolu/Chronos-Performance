@@ -18,6 +18,7 @@ const StarRating: React.FC<StarRatingProps> = ({
 		<div className="flex items-center absolute right-[30px] bottom-[15px] z-20">
 			{Array.from({ length: fullStars }, (_, index) => (
 				<Star
+					data-testid="full-star"
 					key={`full-${index}`}
 					fill="yellow"
 					strokeWidth={0}
@@ -27,6 +28,7 @@ const StarRating: React.FC<StarRatingProps> = ({
 
 			{hasHalfStar && (
 				<StarHalf
+					data-testid="half-star"
 					key="half"
 					fill="yellow"
 					strokeWidth={0}
@@ -36,6 +38,7 @@ const StarRating: React.FC<StarRatingProps> = ({
 
 			{Array.from({ length: emptyStars }, (_, index) => (
 				<Star
+					data-testid="empty-star"
 					key={`empty-${index}`}
 					fill="#111"
 					strokeWidth={0}

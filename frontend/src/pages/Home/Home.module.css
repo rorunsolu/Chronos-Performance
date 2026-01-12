@@ -1,0 +1,7 @@
+.root {
+	transition: 0.2s ease-in !important;
+	border: 2px solid var(--mantine-color-gray-8) !important;
+	&:hover {
+		background-color: hsl(0, 0%, 8%) !important;
+	}
+}

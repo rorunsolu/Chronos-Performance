@@ -25,3 +25,7 @@
 	font-weight: 700;
 	text-transform: uppercase;
 }
+
+.about {
+	color: var(--mantine-color-gray-3);
+}

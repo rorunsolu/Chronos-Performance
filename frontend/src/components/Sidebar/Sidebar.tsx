@@ -4,17 +4,14 @@ import { formatDistanceToNow } from "date-fns";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-	Divider,
 	Badge,
 	Group,
 	Paper,
 	Stack,
 	Text,
 } from "@mantine/core";
-import {
-	get10MostRecentReports,
-	getReportedGpus,
-} from "@/hooks/statisticsHook";
+import { getReportedGpus } from "@/utils/getReportedGpus";
+import { get10MostRecentReports } from "@/utils/get10MostRecentReports";
 
 const Sidebar = () => {
 	const { reports, fetchReports } =
@@ -39,7 +36,10 @@ const Sidebar = () => {
 		return "red.7";
 	};
 	return (
-		<Stack gap="0">
+		<Stack
+			gap="0"
+			className={styles.sidebar}
+		>
 			<Stack
 				mx="md"
 				mt="md"
@@ -66,15 +66,13 @@ const Sidebar = () => {
 					>
 						<Group>
 							<div className={styles.order}>
-								<p>{index + 1}</p>
+								<Text size="xs">{index + 1}</Text>
 							</div>{" "}
-							{gpu}
+							<Text>{gpu}</Text>
 						</Group>
 					</Paper>
 				))}
 			</Stack>
-
-			<Divider mt="sm" />
 
 			<Stack
 				mx="md"

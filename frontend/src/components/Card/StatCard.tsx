@@ -34,7 +34,6 @@ const StatCard = ({
 			<Group justify="space-between">
 				<Text
 					size="xs"
-					c="dimmed"
 					className={classes.title}
 				>
 					{title}
@@ -78,8 +77,9 @@ const StatCard = ({
 
 			<Text
 				fz="xs"
-				c="dimmed"
+				//c="gray.2"
 				mt={7}
+				className={classes.about}
 			>
 				{about}
 			</Text>
