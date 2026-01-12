@@ -8,8 +8,7 @@
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"vitest": "vitest run",
-		"vitest:watch": "vitest"
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@mantine/carousel": "^8.2.8",
@@ -61,6 +60,7 @@
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.39.1",
 		"vite": "^7.1.2",
+		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4"
 	}
 }

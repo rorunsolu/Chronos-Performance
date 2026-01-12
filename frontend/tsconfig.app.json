@@ -27,7 +27,12 @@
 		"allowJs": true, // Allow JavaScript files alongside TypeScript
 
 		// === Type Definitions ===
-		"types": ["react", "vite/client", "node"], // Include global types for React, Vite, and Node
+		"types": [
+			"react",
+			"vite/client",
+			"node",
+			"vitest/globals"
+		], // Include global types for React, Vite, and Node
 
 		// === Path Aliases ===
 		"baseUrl": ".", // Base for module resolution
